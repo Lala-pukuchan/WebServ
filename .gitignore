@@ -56,5 +56,4 @@ dkms.conf
 *.swiftmodule
 .DS_Store
 webserv
-client
 server
