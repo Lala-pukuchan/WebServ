@@ -10,7 +10,7 @@ class ServerResponse
 		ClientRequest _req;
 		string _res;
 
-		bool methodCheck();
+		bool methodCheck(ClientRequest &req);
 		bool contentLengthCheck();
 
 		void Cgi();
@@ -24,7 +24,7 @@ class ServerResponse
 		void Trace();
 
 	public:
-		ServerResponse (const ClientRequest &req);
+		ServerResponse (ClientRequest &req);
 		~ServerResponse ();
 
 };
