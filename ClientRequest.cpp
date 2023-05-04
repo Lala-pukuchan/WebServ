@@ -1,10 +1,15 @@
 #include "ClientRequest.hpp"
 
 ClientRequest::ClientRequest (){
-	_method = "GET";
-	_contentLength = "10";
-	_allowedMethod.push_back("GET");
-	_allowedMethod.push_back("POST");
+	// from req
+	_method = "TRACE";
+	_contentLength = "40";
+
+	// from conf
+	string m[] = { "GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE" };
+	for (int i = 0; i < 7; i++){
+		_allowedMethod.push_back(m[i]);
+	}
 	_maxBodySize = 50;
 }
 

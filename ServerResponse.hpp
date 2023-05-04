@@ -7,20 +7,27 @@ class ServerResponse
 {
 
 	private:
+		// req & res
 		ClientRequest _req;
 		string _res;
+
+		// to create res
 		string _status_code;
 		string _status;
 		string _content_length;
 
-		bool methodCheck(ClientRequest &req);
-		bool contentLengthCheck(ClientRequest &req);
+		// error check
+		bool methodCheck();
+		bool contentLengthCheck();
 
+		// create res
 		void setStatus(string status_code, string status);
 		void setResponse();
 
+		// cgi exe
 		void Cgi();
 
+		// http method
 		void Get();
 		void Head();
 		void Post();
@@ -30,8 +37,11 @@ class ServerResponse
 		void Trace();
 
 	public:
+		// const & dest
 		ServerResponse (ClientRequest &req);
 		~ServerResponse ();
+
+		// getter
 		string getResponse () const;
 
 };
