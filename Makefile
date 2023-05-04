@@ -9,7 +9,7 @@ SRCDIR	:= src
 SRCS	:= main.cpp $(CONFIGS)
 SORCES	:= $(addprefix $(SRCDIR)/, $(SRCS))
 
-OBJDIR	:= objs/
+OBJDIR	:= objs
 OBJS	:= $(SRCS:.cpp=.o)
 OBJECTS	:= $(addprefix $(OBJDIR)/, $(OBJS))
 
@@ -32,7 +32,7 @@ $(NAME) : $(OBJECTS)
 	@printf "$(RC)"
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
-	@mkdir -p $(OBJDIR)$(*D)
+	@mkdir -p $(OBJDIR)/$(*D)
 	@printf "$(YE)"
 	$(CXX) $(CXXFLAGS) -I $(INCLUDE) -c $< -o $@
 	@printf "$(RC)"

@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:46:22 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/01 18:28:08 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/04 23:00:21 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,13 @@ class ServerConfig
 		bool cgi; //要る？
 		std::vector<std::string> cgi_extension_;
 
-		bool isAllSemicolon(std::string &line);
+		void setLocationConfig(const std::string &value, const std::vector<std::string> &configStrings, size_t &pos);
+		void setIndex(const std::string &line, const size_t &pos);
+		std::string getOneValue(const std::string &line, size_t &pos);
 	public:
 		ServerConfig();
 		~ServerConfig();
-		void setServerConfig(std::vector<std::string> &configStrings, size_t &pos);
+		void setServerConfig(const std::vector<std::string> &configStrings, size_t &pos);
 		std::string getPortString();
 };
 
@@ -62,6 +64,7 @@ class SemicolonError : public std::exception
 		{
 			return (_message.c_str());
 		}
+		~SemicolonError() throw() {}
 };
 
 class EmptyValueError : public std::exception
@@ -80,6 +83,39 @@ class EmptyValueError : public std::exception
 		{
 			return (_message.c_str());
 		}
+		~EmptyValueError() throw() {}
+};
+
+class EmptyPortError : public std::exception
+{
+	private:
+		std::string _message;
+
+	public:
+		virtual const char* what() const throw()
+		{
+			return ("port is empty");
+		}
+		~EmptyPortError() throw() {}
+};
+
+class InvalidKeyError : public std::exception
+{
+	private:
+		std::string _message;
+
+	public:
+		InvalidKeyError(size_t pos, const std::string &line)
+		{
+			std::stringstream ss;
+			ss << "line " << pos << ": invalid key :" << line << std::endl;
+			_message = ss.str();
+		}
+		virtual const char* what() const throw()
+		{
+			return (_message.c_str());
+		}
+		~InvalidKeyError() throw() {}
 };
 
 #endif

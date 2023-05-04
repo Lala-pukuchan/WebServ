@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:51:31 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/01 17:44:18 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/04 22:50:18 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,12 @@ class Servers
 		ServerConfig _defaultServer;
 		std::vector<std::string> _configStrings;
 
-		void setServersConfig(void);
 	public:
 		Servers();
 		~Servers();
 
 		void ReadConfig(std::string path);
+		void setServersConfig(void);
 		void PrintConfig();
 };
 
@@ -71,6 +71,7 @@ class ConfigContentError : public std::exception
 		{
 			return (_message.c_str());
 		}
+		~ConfigContentError() throw() {}
 };
 
 #endif

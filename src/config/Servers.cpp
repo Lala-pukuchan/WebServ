@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:02:19 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/01 17:25:14 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/04 23:23:52 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void Servers::ReadConfig(std::string path)
 void Servers::setServersConfig(void)
 {
 	std::string		line;
-	std::string	split_line[2];
+	std::string	split_line[3];
 	size_t			pos = 0;
 
 	while (pos < this->_configStrings.size())
@@ -63,8 +63,8 @@ void Servers::setServersConfig(void)
 		iss >> split_line[0] >> split_line[1] >> split_line[2];
 		if (!split_line[2].empty())
 			throw ConfigContentError(pos, _configStrings[pos]);
-		else if (split_line[0] == "server" && split_line[1] == "{" \
-			|| split_line[0] == "server{" && split_line[1].empty())
+		else if ((split_line[0] == "server" && split_line[1] == "{") \
+			|| split_line[0] == "server{")
 		{
 			ServerConfig server;
 			server.setServerConfig(_configStrings, ++pos);

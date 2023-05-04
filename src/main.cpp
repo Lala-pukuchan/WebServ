@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 11:32:59 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/01 16:28:22 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/04 23:19:58 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,13 @@ int main(int argc, char **argv)
 		return (1);
 	}
 	servers.ReadConfig(argv[1]);
-	servers.PrintConfig();
+	try
+	{
+		servers.setServersConfig();
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
 	return (0);
 }
