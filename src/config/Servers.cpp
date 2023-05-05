@@ -6,7 +6,7 @@
 /*   By: hyanagim <hyanagim@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:02:19 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/05 17:22:48 by hyanagim         ###   ########.fr       */
+/*   Updated: 2023/05/05 17:37:19 by hyanagim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,14 +116,15 @@ void Servers::makeServerSocket(void)
 			_sockets[socket.getFd()].push_back(it->second[i]);
 	}
 
-	map<int, vector<ServerConfig> >::iterator soc;
-	for (soc = _sockets.begin(); soc != _sockets.end(); ++soc)
-	{
-		cout << "\033[32;1m" << soc->first << "\033[0m" << endl;
-		for (unsigned long i = 0; i < soc->second.size(); i++)
-		{
-			cout << "\033[31;1m" << i << "\033[0m" << endl;
-			soc->second[i].PrintServerConfig();
-		}
-	}
+	//for debug
+	// map<int, vector<ServerConfig> >::iterator soc;
+	// for (soc = _sockets.begin(); soc != _sockets.end(); ++soc)
+	// {
+	// 	cout << "\033[32;1m" << soc->first << "\033[0m" << endl;
+	// 	for (unsigned long i = 0; i < soc->second.size(); i++)
+	// 	{
+	// 		cout << "\033[31;1m" << i << "\033[0m" << endl;
+	// 		soc->second[i].PrintServerConfig();
+	// 	}
+	// }
 }
