@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:13:34 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/04 23:42:29 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/05 11:52:05 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ void LocationConfig::setLocationConfig(const std::vector<std::string> &configStr
 		std::string		check;
 		iss >> key;
 		pos++;
-		std::cout << "key: " << key << std::endl;
 		if (key.empty())
 			continue;
 		else if (key == "}")
@@ -93,7 +92,7 @@ void LocationConfig::getIntValue(const std::string &line)
 	if (page.find(';') != std::string::npos)
 		page = page.substr(0, page.find(';'));
 	if (key == "error_page")
-		_error_page[std::atoi(int_value.c_str())] = page;
+		_errorPage[std::atoi(int_value.c_str())] = page;
 	else if (key == "return")
 		_return_redirect[std::atoi(int_value.c_str())] = page;
 }
@@ -122,4 +121,23 @@ void LocationConfig::setCgiExtension(const std::string &line, const size_t &pos)
 	}
 	if (_cgi_extension.empty())
 		throw EmptyValueError(pos, line);
+}
+
+void LocationConfig::PrintLocationConfig()
+{
+	std::cout << "alias: " << this->_alias << std::endl;
+	std::cout << "autoindex: " << this->_autoindex << std::endl;
+	std::cout << "upload_path: " << this->_upload_path << std::endl;
+	std::cout << "cgi_extension: ";
+	for (size_t i = 0; i < this->_cgi_extension.size(); i++)
+		std::cout << this->_cgi_extension[i] << " ";
+	std::cout << std::endl;
+	std::cout << "error_page: ";
+	for (std::map<int, std::string>::iterator it = this->_errorPage.begin(); it != this->_errorPage.end(); it++)
+		std::cout << it->first << " " << it->second << " ";
+	std::cout << std::endl;
+	std::cout << "return: ";
+	for (std::map<int, std::string>::iterator it = this->_return_redirect.begin(); it != this->_return_redirect.end(); it++)
+		std::cout << it->first << " " << it->second << " ";
+	std::cout << std::endl;
 }

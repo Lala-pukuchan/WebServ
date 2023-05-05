@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:02:19 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/04 23:23:52 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/05 11:54:24 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void Servers::setServersConfig(void)
 }
 
 // for debug
-void Servers::PrintConfig()
+void Servers::PrintConfigFile()
 {
 	std::vector<std::string>::iterator it = this->_configStrings.begin();
 	std::vector<std::string>::iterator ite = this->_configStrings.end();
@@ -85,5 +85,20 @@ void Servers::PrintConfig()
 	{
 		std::cout << *it << std::endl;
 		it++;
+	}
+}
+
+void Servers::PrintServersConfig()
+{
+	std::cout << "-------------------------------------" << std::endl;
+	for (std::map<std::string, std::vector<ServerConfig> >::iterator it = this->_servers.begin(); it != this->_servers.end(); ++it)
+	{
+		std::vector<ServerConfig> &server_configs = it->second;
+
+		for (std::vector<ServerConfig>::iterator server_it = server_configs.begin(); server_it != server_configs.end(); ++server_it)
+		{
+			server_it->PrintServerConfig();
+			std::cout << "-------------------------------------" << std::endl;
+		}
 	}
 }

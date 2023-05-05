@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:51:31 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/04 22:50:18 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/05 11:18:05 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,10 @@ class Servers
 
 		void ReadConfig(std::string path);
 		void setServersConfig(void);
-		void PrintConfig();
+
+		//for debug
+		void PrintConfigFile();
+		void PrintServersConfig();
 };
 
 class FileOpenError : public std::exception
