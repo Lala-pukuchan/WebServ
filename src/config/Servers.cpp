@@ -6,16 +6,10 @@
 /*   By: hyanagim <hyanagim@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:02:19 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/05 17:37:19 by hyanagim         ###   ########.fr       */
+/*   Updated: 2023/05/05 17:54:09 by hyanagim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// #include <iostream>
-// #include <fstream>
-// #include <string>
-// #include <sstream>
-// #include <vector>
-// #include <map>
 #include "Servers.hpp"
 
 Servers::Servers()
