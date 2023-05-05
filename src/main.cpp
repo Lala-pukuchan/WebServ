@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: hyanagim <hyanagim@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 11:32:59 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/05 12:00:52 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/05 17:10:28 by hyanagim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,6 @@ int main(int argc, char **argv)
 	{
 		std::cerr << e.what() << '\n';
 	}
-
+	servers.makeServerSocket();
 	return (0);
 }
