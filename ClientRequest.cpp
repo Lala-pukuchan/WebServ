@@ -2,8 +2,10 @@
 
 // constr
 ClientRequest::ClientRequest (){
+	// need to initialize firstly
+
 	// from req
-	_method = "GET";
+	_method = "HEAD";
 	_contentLength = "40";
 	_file_path = "./test/test.html";
 	_file_ext = ".html";

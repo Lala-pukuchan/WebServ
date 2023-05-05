@@ -30,10 +30,13 @@ class ServerResponse
 		// req & res
 		ClientRequest _req;
 		string _res;
+		string _method;
 
 		// to create res
 		string _status_code;
 		string _status;
+		string _content_length;
+		string _content_type;
 		string _response_message_body;
 
 		// error check
@@ -45,6 +48,9 @@ class ServerResponse
 
 		// cgi exe
 		void Cgi();
+
+		// common in GET/HEAD
+		void openFile();
 
 		// http method
 		void Get();

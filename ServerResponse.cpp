@@ -4,8 +4,8 @@
 std::map<std::string, std::string> mime_mapper (mime, mime + mime_size);
 
 bool ServerResponse::methodCheck() {
-    for (int i = 0; i < static_cast<int>(_req.getAllowedMethod().size()); ++i) {
-		if (_req.getMethod() == _req.getAllowedMethod()[i])
+    for (int i = 0; i < static_cast<int>(_req.getAllowedMethod().size()); i++) {
+		if (_method == _req.getAllowedMethod()[i])
 			return (false);
     }
 	return (true);
@@ -21,29 +21,28 @@ void ServerResponse::setRes(
 		_status_code = status_code;
 	if (!status.empty())
 		_status = status;
-	if (!response_message_body.empty())
+	if (_method != "DELETE")
+		_content_length = "Content-Length: " + to_string(response_message_body.size()) + "\r\n";
+	if (!_req.getFileExt().empty() && _method != "DELETE")
+		_content_type = "Content-Type: " + mime_mapper.at(_req.getFileExt()) + "\r\n";
+	if (!response_message_body.empty() && _method != "HEAD")
 		_response_message_body = response_message_body;
 	
 	// create res
 	ostringstream os;
 	os << 
 		"HTTP/1.1 " << _status_code << " " << _status << "\r\n"
-		<< "Content-Length: " << _response_message_body.size() << "\r\n"
+		<< _content_length
 		<< "Connection:close\r\n"
+		<< _content_type
 		<< "\r\n"
 		<< _response_message_body;
 	_res = os.str();
 }
 
-//void ServerResponse::Cgi(){}
+void ServerResponse::Cgi(){}
 
-void ServerResponse::Get(){
-	cout << "GET method is called." << endl;
-	
-	// cgi
-
-
-	// open file
+void ServerResponse::openFile(){
 	ifstream ifs(_req.getFilePath());
 	if (!ifs.is_open())
 	{
@@ -61,8 +60,17 @@ void ServerResponse::Get(){
 	}
 }
 
+void ServerResponse::Get(){
+	cout << "GET method is called." << endl;
+	//if (isCgi())
+	//	Cgi();
+	//else
+		openFile();
+}
+
 void ServerResponse::Head(){
 	cout << "HEAD method is called." << endl;
+	openFile();
 }
 
 void ServerResponse::Post(){
@@ -86,7 +94,8 @@ void ServerResponse::Trace(){
 }
 
 ServerResponse::ServerResponse (ClientRequest &req) : 
-	_req(req), _res(""), _status_code(""), _status(""), _response_message_body(""){
+	_req(req), _res(""), _method(_req.getMethod()), _status_code(""), _status(""), _content_length(""),
+	_content_type(""), _response_message_body(""){
 
 	// method / content length error
 	bool m = false;
@@ -105,9 +114,8 @@ ServerResponse::ServerResponse (ClientRequest &req) :
 			&ServerResponse::Delete, &ServerResponse::Options, &ServerResponse::Trace};
 
 	// exe method func
-	string method = _req.getMethod();
 	for (int i = 0; i < 7; i++){
-		if (method == methods[i])
+		if (_method == methods[i])
 		{
 			(this->*funcs[i])();
 			break;
@@ -119,11 +127,12 @@ ServerResponse::~ServerResponse (){}
 
 string ServerResponse::getResponse () const { return (_res); }
 
-//int main(void)
-//{
-//	ClientRequest req;
-//	ServerResponse res = ServerResponse(req);
-//	cout << "--- response from server ---" << endl;
-//	cout << res.getResponse();
-//	return (0);
-//}
+int main(void)
+{
+	ClientRequest req;
+	ServerResponse res = ServerResponse(req);
+	cout << "--- response from server (START) ---" << endl;
+	cout << res.getResponse();
+	cout << "--- response from server (END)   ---" << endl;
+	return (0);
+}
