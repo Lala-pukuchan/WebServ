@@ -5,8 +5,12 @@ CONFIGDIR := config
 CONFIGS := LocationConfig.cpp ServerConfig.cpp Servers.cpp
 CONFIGS := $(addprefix $(CONFIGDIR)/, $(CONFIGS))
 
+SERVERDIR := server
+SERVERS := ServerSocket.cpp
+SERVERS := $(addprefix $(SERVERDIR)/, $(SERVERS))
+
 SRCDIR	:= src
-SRCS	:= main.cpp $(CONFIGS)
+SRCS	:= main.cpp $(CONFIGS) $(SERVERS)
 SORCES	:= $(addprefix $(SRCDIR)/, $(SRCS))
 
 OBJDIR	:= objs

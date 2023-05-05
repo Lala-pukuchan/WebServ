@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Servers.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: hyanagim <hyanagim@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:51:31 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/05 11:18:05 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/05 17:26:53 by hyanagim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,27 +20,30 @@
 # include <vector>
 # include <map>
 # include "ServerConfig.hpp"
+using namespace std;
 
 class Servers
 {
 	private:
-		std::map<std::string, std::vector<ServerConfig> > _servers;
+		map<string, vector<ServerConfig> > _servers;
 		ServerConfig _defaultServer;
-		std::vector<std::string> _configStrings;
+		vector<string> _configStrings;
+		map<int, vector<ServerConfig> > _sockets;
 
 	public:
 		Servers();
 		~Servers();
 
-		void ReadConfig(std::string path);
+		void ReadConfig(string path);
 		void setServersConfig(void);
+		void makeServerSocket(void);
 
 		//for debug
 		void PrintConfigFile();
 		void PrintServersConfig();
 };
 
-class FileOpenError : public std::exception
+class FileOpenError : public exception
 {
 	public:
 		virtual const char* what() const throw()
@@ -49,7 +52,7 @@ class FileOpenError : public std::exception
 		}
 };
 
-class FileEmptyError : public std::exception
+class FileEmptyError : public exception
 {
 	public:
 		virtual const char* what() const throw()
@@ -58,16 +61,16 @@ class FileEmptyError : public std::exception
 		}
 };
 
-class ConfigContentError : public std::exception
+class ConfigContentError : public exception
 {
 	private:
-		std::string _message;
+		string _message;
 
 	public:
-		ConfigContentError(size_t pos, const std::string &line)
+		ConfigContentError(size_t pos, const string &line)
 		{
-			std::stringstream ss;
-			ss << "line " << pos << ": invalid config content: " << line << std::endl;
+			stringstream ss;
+			ss << "line " << pos << ": invalid config content: " << line << endl;
 			_message = ss.str();
 		}
 		virtual const char* what() const throw()
