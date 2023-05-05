@@ -1,9 +1,12 @@
 #include "ClientRequest.hpp"
 
+// constr
 ClientRequest::ClientRequest (){
 	// from req
-	_method = "TRACE";
+	_method = "GET";
 	_contentLength = "40";
+	_file_path = "./test/test.html";
+	_file_ext = ".html";
 
 	// from conf
 	string m[] = { "GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE" };
@@ -13,11 +16,17 @@ ClientRequest::ClientRequest (){
 	_maxBodySize = 50;
 }
 
+// destr
 ClientRequest::~ClientRequest (){}
 
+// getter
 string ClientRequest::getMethod () const { return (_method); }
 
 string ClientRequest::getContentLength () const { return (_contentLength); }
+
+string ClientRequest::getFilePath() const { return (_file_path); }
+
+string ClientRequest::getFileExt() const { return (_file_ext); }
 
 vector<string> ClientRequest::getAllowedMethod () const { return (_allowedMethod); }
 

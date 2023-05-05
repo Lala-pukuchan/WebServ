@@ -3,6 +3,26 @@
 
 #include "ClientRequest.hpp"
 
+typedef std::pair<std::string, std::string> stringpair_t;
+const stringpair_t mime[] = {
+  stringpair_t(".txt", "text/plain"),
+  stringpair_t(".html", "text/html"),
+  stringpair_t(".htm", "text/html"),
+  stringpair_t(".xml", "text/xml"),
+  stringpair_t(".js", "text/javascript"),
+  stringpair_t(".vbs", "text/vbscript"),
+  stringpair_t(".css", "text/css"),
+  stringpair_t(".gif", "image/gif"),
+  stringpair_t(".jpg", "image/jpeg"),
+  stringpair_t(".jpeg", "image/jpeg"),
+  stringpair_t(".png", "image/png"),
+  stringpair_t(".cgi", "application/x-httpd-cgi"),
+  stringpair_t(".doc", "application/msword"),
+  stringpair_t(".pdf", "application/pdf")
+};
+const int mime_size = sizeof(mime) / sizeof(mime[0]);
+extern std::map <std::string, std::string> mime_mapper;
+
 class ServerResponse
 {
 
@@ -14,15 +34,14 @@ class ServerResponse
 		// to create res
 		string _status_code;
 		string _status;
-		string _content_length;
+		string _response_message_body;
 
 		// error check
 		bool methodCheck();
 		bool contentLengthCheck();
 
 		// create res
-		void setStatus(string status_code, string status);
-		void setResponse();
+		void setRes(string status_code, string status, string response_message_body);
 
 		// cgi exe
 		void Cgi();
