@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:46:18 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/05 11:56:15 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/05 12:14:57 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ void ServerConfig::setCgiExtension(const std::string &line, const size_t &pos)
 		std::string value;
 		iss >> value;
 		if (value.empty())
-			throw EmptyValueError(pos, line);
+			throw SemicolonError(pos, line);
 		if (value.find(';') == 0)
 			break;
 		if (value.find(';') != std::string::npos)
