@@ -55,9 +55,5 @@ dkms.conf
 *.swiftdoc
 *.swiftmodule
 .DS_Store
-webserv
-
-Chapter_02
-Chapter_05
-Config.txt
 .vscode
+webserv
