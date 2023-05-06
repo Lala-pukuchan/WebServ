@@ -1,7 +1,8 @@
 #include "ClientRequest.hpp"
 #include "ServerResponse.hpp"
 
-std::map<std::string, std::string> mime_mapper (mime, mime + mime_size);
+map<string, string> mime_mapper (mime, mime + mime_size);
+map<string, string> status_mapper (status, status + status_size);
 
 bool ServerResponse::methodCheck() {
     for (int i = 0; i < static_cast<int>(_req.getAllowedMethod().size()); i++) {
@@ -13,8 +14,7 @@ bool ServerResponse::methodCheck() {
 
 bool ServerResponse::contentLengthCheck(){ return (stoi(_req.getContentLength()) > _req.getMaxBodySize()); }
 
-void ServerResponse::setRes(
-	string status_code, string status, string response_message_body, string content_type){
+void ServerResponse::setRes(string status_code, string response_message_body, string content_type){
 
 	// init
 	string res_content_length = "";
@@ -32,7 +32,7 @@ void ServerResponse::setRes(
 	// create res
 	ostringstream os;
 	os << 
-		"HTTP/1.1 " << status_code << " " << status << "\r\n"
+		"HTTP/1.1 " << status_code << " " << status_mapper.at(status_code) << "\r\n"
 		<< res_content_length
 		<< "Connection:close\r\n"
 		<< res_content_type
@@ -57,26 +57,23 @@ void ServerResponse::getFileContents(){
 	//}
 	//else 
 	if (!ifs.is_open())
-	{
-		cout << "Filed to open file with this path: " << _file_absolute_path << endl;
-		setRes("404", "Not Found", "", "");
-	}
+		setRes("404", "", "");
 	else
 	{
 		string content;
 		string line;
 		while (getline(ifs, line))
 			content += line;
-		ifs.close();
-		setRes("200", "OK", content, mime_mapper.at(_req.getFileExt()));
+		setRes("200", content, mime_mapper.at(_req.getFileExt()));
 	}
+	ifs.close();
 }
 
 void ServerResponse::updateFileContents(){
 }
 
 void ServerResponse::Get(){
-	cout << "GET method is called." << endl;
+	// get file
 	//if (isCgi())
 	//	Cgi();
 	//else
@@ -84,40 +81,55 @@ void ServerResponse::Get(){
 }
 
 void ServerResponse::Head(){
-	cout << "HEAD method is called." << endl;
+	// get file, but not return contents
 	getFileContents();
 }
 
 void ServerResponse::Post(){
-	cout << "Post method is called. message: " << _req.getRequestMessageBody() << endl;
+
 	//if (isCgi())
 	//	Cgi();
 	//else
-		setRes("200", "OK", "POST success", "text/plain");
+		setRes("200", "POST success", "text/plain");
 }
 
 void ServerResponse::Put(){
-	cout << "Put method is called." << endl;
-	
+
 	// create / update file
 	bool exist = false;
 	ifstream ifs(_file_absolute_path);
 	if ((exist = existFile()) && !ifs.is_open()){
-		setRes("403", "Forbidden", "", "");
+		setRes("403", "", "");
 	} else {
-		ofstream ofs(_file_absolute_path, std::ios::trunc);
+		ofstream ofs(_file_absolute_path, ios::trunc);
 		ofs << _req.getRequestMessageBody();
 		if (!exist)
-			setRes("201", "Created", "", "");
+			setRes("201", "", "");
 		else
-			setRes("204", "No Content", "", "");
+			setRes("204", "", "");
 		ofs.close();
-		ifs.close();
 	}
+	ifs.close();
 }
 
 void ServerResponse::Delete(){
-	cout << "Delete method is called." << endl;
+
+	// delte file
+	ifstream ifs(_file_absolute_path);
+	if (!existFile()){
+		setRes("404", "", "");
+	} else {
+		try {
+			if (!remove(_file_absolute_path.c_str()))
+				setRes("200", "", "");
+			else
+				setRes("403", "", "");
+		} catch (const exception& e) {
+			cout << e.what() << endl;
+			setRes("500", "", "");
+		}
+	}
+	ifs.close();
 }
 
 void ServerResponse::Options(){
@@ -128,15 +140,16 @@ void ServerResponse::Trace(){
 	cout << "Trace method is called." << endl;
 }
 
-ServerResponse::ServerResponse (ClientRequest &req) : _req(req), _res(""), _method(_req.getMethod()), _file_absolute_path(_req.getFileAbsolutePath()){
+ServerResponse::ServerResponse (ClientRequest &req) : 
+	_req(req), _res(""), _method(_req.getMethod()), _file_absolute_path(_req.getFileAbsolutePath()){
 
 	// method / content length error
 	bool m = false;
 	if ((m = methodCheck()) || (contentLengthCheck())){
 		if (m)
-			setRes("405", "Method Not Allowed", "", "");
+			setRes("405", "", "");
 		else
-			setRes("413", "Payload Too Large", "", "");
+			setRes("413", "", "");
 		return ;
 	}
 

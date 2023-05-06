@@ -3,6 +3,7 @@
 
 #include "ClientRequest.hpp"
 
+// mime-type
 typedef std::pair<std::string, std::string> stringpair_t;
 const stringpair_t mime[] = {
   stringpair_t(".txt", "text/plain"),
@@ -23,6 +24,20 @@ const stringpair_t mime[] = {
 const int mime_size = sizeof(mime) / sizeof(mime[0]);
 extern std::map <std::string, std::string> mime_mapper;
 
+// response status
+const stringpair_t status[] = {
+  stringpair_t("200", "OK"),
+  stringpair_t("201", "Created"),
+  stringpair_t("204", "No Content"),
+  stringpair_t("403", "Forbidden"),
+  stringpair_t("404", "Not Found"),
+  stringpair_t("405", "Method Not Allowed"),
+  stringpair_t("413", "Payload Too Large"),
+  stringpair_t("500", "Internal Server Error")
+};
+const int status_size = sizeof(status) / sizeof(status[0]);
+extern std::map <std::string, std::string> status_mapper;
+
 class ServerResponse
 {
 
@@ -38,7 +53,7 @@ class ServerResponse
 		bool contentLengthCheck();
 
 		// create res
-		void setRes(string status_code, string status, string response_message_body, string content_type);
+		void setRes(string status_code, string response_message_body, string content_type);
 
 		// cgi exe
 		void Cgi();
