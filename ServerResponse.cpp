@@ -14,40 +14,48 @@ bool ServerResponse::methodCheck() {
 bool ServerResponse::contentLengthCheck(){ return (stoi(_req.getContentLength()) > _req.getMaxBodySize()); }
 
 void ServerResponse::setRes(
-	string status_code, string status, string response_message_body){
+	string status_code, string status, string response_message_body, string content_type){
+
+	// init
+	string res_content_length = "";
+	string res_content_type = "";
+	string res_response_message_body = "";
 
 	// update res contents
-	if (!status_code.empty())
-		_status_code = status_code;
-	if (!status.empty())
-		_status = status;
 	if (_method != "DELETE")
-		_content_length = "Content-Length: " + to_string(response_message_body.size()) + "\r\n";
-	if (!_req.getFileExt().empty() && _method != "DELETE")
-		_content_type = "Content-Type: " + mime_mapper.at(_req.getFileExt()) + "\r\n";
-	if (!response_message_body.empty() && _method != "HEAD")
-		_response_message_body = response_message_body;
+		res_content_length = "Content-Length: " + to_string(response_message_body.size()) + "\r\n";
+	if (!content_type.empty())
+		res_content_type = "Content-Type: " + content_type + "\r\n";
+	if (_method != "HEAD")
+		res_response_message_body = response_message_body;
 	
 	// create res
 	ostringstream os;
 	os << 
-		"HTTP/1.1 " << _status_code << " " << _status << "\r\n"
-		<< _content_length
+		"HTTP/1.1 " << status_code << " " << status << "\r\n"
+		<< res_content_length
 		<< "Connection:close\r\n"
-		<< _content_type
+		<< res_content_type
 		<< "\r\n"
-		<< _response_message_body;
+		<< res_response_message_body;
 	_res = os.str();
 }
 
 void ServerResponse::Cgi(){}
 
 void ServerResponse::openFile(){
-	ifstream ifs(_req.getFilePath());
+	string path = _req.getFileAbsolutePath();
+	ifstream ifs(path);
+	//if (isDir())
+	//{
+	//	cout << "path is directory: " << path << endl;
+	//  directoryListing();
+	//}
+	//else 
 	if (!ifs.is_open())
 	{
-		cerr << "Filed to open file with this path: " << _req.getFilePath() << endl;
-		setRes("404", "Not Found", "");
+		cout << "Filed to open file with this path: " << path << endl;
+		setRes("404", "Not Found", "", "");
 	}
 	else
 	{
@@ -56,7 +64,7 @@ void ServerResponse::openFile(){
 		while (getline(ifs, line))
 			content += line;
 		ifs.close();
-		setRes("200", "OK", content);
+		setRes("200", "OK", content, mime_mapper.at(_req.getFileExt()));
 	}
 }
 
@@ -74,7 +82,11 @@ void ServerResponse::Head(){
 }
 
 void ServerResponse::Post(){
-	cout << "Post method is called." << endl;
+	cout << "Post method is called. message: " << _req.getRequestMessageBody() << endl;
+	//if (isCgi())
+	//	Cgi();
+	//else
+		setRes("200", "OK", "POST success", "text/plain");
 }
 
 void ServerResponse::Put(){
@@ -93,17 +105,15 @@ void ServerResponse::Trace(){
 	cout << "Trace method is called." << endl;
 }
 
-ServerResponse::ServerResponse (ClientRequest &req) : 
-	_req(req), _res(""), _method(_req.getMethod()), _status_code(""), _status(""), _content_length(""),
-	_content_type(""), _response_message_body(""){
+ServerResponse::ServerResponse (ClientRequest &req) : _req(req), _res(""), _method(_req.getMethod()){
 
 	// method / content length error
 	bool m = false;
 	if ((m = methodCheck()) || (contentLengthCheck())){
 		if (m)
-			setRes("405", "Method Not Allowed", "");
+			setRes("405", "Method Not Allowed", "", "");
 		else
-			setRes("413", "Payload Too Large", "");
+			setRes("413", "Payload Too Large", "", "");
 		return ;
 	}
 

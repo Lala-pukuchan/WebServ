@@ -32,19 +32,12 @@ class ServerResponse
 		string _res;
 		string _method;
 
-		// to create res
-		string _status_code;
-		string _status;
-		string _content_length;
-		string _content_type;
-		string _response_message_body;
-
 		// error check
 		bool methodCheck();
 		bool contentLengthCheck();
 
 		// create res
-		void setRes(string status_code, string status, string response_message_body);
+		void setRes(string status_code, string status, string response_message_body, string content_type);
 
 		// cgi exe
 		void Cgi();

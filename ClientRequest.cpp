@@ -5,10 +5,11 @@ ClientRequest::ClientRequest (){
 	// need to initialize firstly
 
 	// from req
-	_method = "HEAD";
+	_method = "GET";
 	_contentLength = "40";
-	_file_path = "./test/test.html";
+	_file_absolute_path = "./test/test.html";
 	_file_ext = ".html";
+	_request_message_body = "{a:b}";
 
 	// from conf
 	string m[] = { "GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE" };
@@ -26,10 +27,12 @@ string ClientRequest::getMethod () const { return (_method); }
 
 string ClientRequest::getContentLength () const { return (_contentLength); }
 
-string ClientRequest::getFilePath() const { return (_file_path); }
+string ClientRequest::getFileAbsolutePath() const { return (_file_absolute_path); }
 
 string ClientRequest::getFileExt() const { return (_file_ext); }
 
 vector<string> ClientRequest::getAllowedMethod () const { return (_allowedMethod); }
 
 int ClientRequest::getMaxBodySize() const { return (_maxBodySize); }
+
+string ClientRequest::getRequestMessageBody() const { return (_request_message_body); }
