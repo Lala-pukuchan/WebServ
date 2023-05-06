@@ -5,11 +5,11 @@ ClientRequest::ClientRequest (){
 	// need to initialize firstly
 
 	// from req
-	_method = "GET";
+	_method = "PUT";
 	_contentLength = "40";
-	_file_absolute_path = "./test/test.html";
+	_file_absolute_path = "./test/test.txt";
 	_file_ext = ".html";
-	_request_message_body = "{a:b}";
+	_request_message_body = "test2";
 
 	// from conf
 	string m[] = { "GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE" };

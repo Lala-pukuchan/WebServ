@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <map>
+#include <sys/stat.h>
 
 using namespace std;
 

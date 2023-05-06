@@ -43,9 +43,13 @@ void ServerResponse::setRes(
 
 void ServerResponse::Cgi(){}
 
-void ServerResponse::openFile(){
-	string path = _req.getFileAbsolutePath();
-	ifstream ifs(path);
+bool ServerResponse::existFile(){
+	struct stat buffer;
+	return (!stat(_file_absolute_path.c_str(), &buffer));
+}
+
+void ServerResponse::getFileContents(){
+	ifstream ifs(_file_absolute_path);
 	//if (isDir())
 	//{
 	//	cout << "path is directory: " << path << endl;
@@ -54,7 +58,7 @@ void ServerResponse::openFile(){
 	//else 
 	if (!ifs.is_open())
 	{
-		cout << "Filed to open file with this path: " << path << endl;
+		cout << "Filed to open file with this path: " << _file_absolute_path << endl;
 		setRes("404", "Not Found", "", "");
 	}
 	else
@@ -68,17 +72,20 @@ void ServerResponse::openFile(){
 	}
 }
 
+void ServerResponse::updateFileContents(){
+}
+
 void ServerResponse::Get(){
 	cout << "GET method is called." << endl;
 	//if (isCgi())
 	//	Cgi();
 	//else
-		openFile();
+		getFileContents();
 }
 
 void ServerResponse::Head(){
 	cout << "HEAD method is called." << endl;
-	openFile();
+	getFileContents();
 }
 
 void ServerResponse::Post(){
@@ -91,6 +98,22 @@ void ServerResponse::Post(){
 
 void ServerResponse::Put(){
 	cout << "Put method is called." << endl;
+	
+	// create / update file
+	bool exist = false;
+	ifstream ifs(_file_absolute_path);
+	if ((exist = existFile()) && !ifs.is_open()){
+		setRes("403", "Forbidden", "", "");
+	} else {
+		ofstream ofs(_file_absolute_path, std::ios::trunc);
+		ofs << _req.getRequestMessageBody();
+		if (!exist)
+			setRes("201", "Created", "", "");
+		else
+			setRes("204", "No Content", "", "");
+		ofs.close();
+		ifs.close();
+	}
 }
 
 void ServerResponse::Delete(){
@@ -105,7 +128,7 @@ void ServerResponse::Trace(){
 	cout << "Trace method is called." << endl;
 }
 
-ServerResponse::ServerResponse (ClientRequest &req) : _req(req), _res(""), _method(_req.getMethod()){
+ServerResponse::ServerResponse (ClientRequest &req) : _req(req), _res(""), _method(_req.getMethod()), _file_absolute_path(_req.getFileAbsolutePath()){
 
 	// method / content length error
 	bool m = false;
