@@ -5,7 +5,7 @@ ClientRequest::ClientRequest (){
 	// need to initialize firstly
 
 	// from req
-	_method = "DELETE";
+	_method = "OPTIONS";
 	_contentLength = "40";
 	_file_absolute_path = "./test/test.txt";
 	_file_ext = ".html";

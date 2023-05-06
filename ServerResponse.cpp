@@ -20,6 +20,7 @@ void ServerResponse::setRes(string status_code, string response_message_body, st
 	string res_content_length = "";
 	string res_content_type = "";
 	string res_response_message_body = "";
+	string res_allow = "";
 
 	// update res contents
 	if (_method != "DELETE")
@@ -28,13 +29,23 @@ void ServerResponse::setRes(string status_code, string response_message_body, st
 		res_content_type = "Content-Type: " + content_type + "\r\n";
 	if (_method != "HEAD")
 		res_response_message_body = response_message_body;
-	
+	if (_method == "OPTIONS")
+	{
+		res_allow = "Allow: ";
+		for (int i = 0; i < static_cast<int>(_req.getAllowedMethod().size()); i++){
+			if (i != 0)
+				res_allow += ",";
+			res_allow += _req.getAllowedMethod()[i];
+    	}
+		res_allow += "\r\n";
+	}
 	// create res
 	ostringstream os;
 	os << 
 		"HTTP/1.1 " << status_code << " " << status_mapper.at(status_code) << "\r\n"
+		<< res_allow
 		<< res_content_length
-		<< "Connection:close\r\n"
+		<< "Connection: close\r\n"
 		<< res_content_type
 		<< "\r\n"
 		<< res_response_message_body;
@@ -67,9 +78,6 @@ void ServerResponse::getFileContents(){
 		setRes("200", content, mime_mapper.at(_req.getFileExt()));
 	}
 	ifs.close();
-}
-
-void ServerResponse::updateFileContents(){
 }
 
 void ServerResponse::Get(){
@@ -133,7 +141,8 @@ void ServerResponse::Delete(){
 }
 
 void ServerResponse::Options(){
-	cout << "Options method is called." << endl;
+	// return allow methods
+	setRes("200", "", "");
 }
 
 void ServerResponse::Trace(){
