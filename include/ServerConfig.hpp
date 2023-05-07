@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:46:22 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/05 11:48:40 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/07 10:57:16 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ class ServerConfig
 	private:
 		std::string _serverName;
 		std::string _port;
-		std::vector<std::string> _allowedMethod;
+		std::vector<std::string> _allowedMethods;
 		int _maxBodySize; //受け取るリクエストのサイズ上限
 		std::map<int, std::string> _errorPage;  //なんで，mapで持っているのか
 		std::map<std::string, LocationConfig> _locations; // cgiとかここにまとまるのか？　まだ，ここまで踏み込んでいない
@@ -41,6 +41,7 @@ class ServerConfig
 		void setLocationConfig(const std::string &value, const std::vector<std::string> &configStrings, size_t &pos);
 		void setCgiExtension(const std::string &line, const size_t &pos);
 		void setIndex(const std::string &line, const size_t &pos);
+		void setAllowedMethods(const std::string &line, const size_t &pos);
 		void getIntValue(const std::string &line);
 		std::string getOneValue(const std::string &line, size_t &pos);
 
@@ -122,6 +123,25 @@ class InvalidKeyError : public std::exception
 			return (_message.c_str());
 		}
 		~InvalidKeyError() throw() {}
+};
+
+class InvalidMethodError : public std::exception
+{
+	private:
+		std::string _message;
+
+	public:
+		InvalidMethodError(size_t pos, const std::string &line)
+		{
+			std::stringstream ss;
+			ss << "line " << pos << ": invalid method :" << line << std::endl;
+			_message = ss.str();
+		}
+		virtual const char* what() const throw()
+		{
+			return (_message.c_str());
+		}
+		~InvalidMethodError() throw() {}
 };
 
 #endif

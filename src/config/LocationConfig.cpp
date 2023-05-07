@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:13:34 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/05 12:14:38 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/07 11:08:16 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,10 @@ void LocationConfig::setLocationConfig(const std::vector<std::string> &configStr
 			this->_upload_path = getOneValue(line, pos);
 		else if (key == "cgi_extension")
 			setCgiExtension(line, pos);
+		else if (key == "index")
+			setIndex(line, pos);
+		else
+			throw InvalidKeyError(pos, line);
 	}
 	
 }
@@ -97,6 +101,32 @@ void LocationConfig::getIntValue(const std::string &line)
 		_return_redirect[std::atoi(int_value.c_str())] = page;
 }
 
+void LocationConfig::setIndex(const std::string &line, const size_t &pos)
+{
+	std::string key;
+	std::istringstream iss(line);
+
+	iss >> key;
+	while(1)
+	{
+		std::string value;
+		iss >> value;
+		if (value.empty())
+			throw EmptyValueError(pos, line);
+		if (value.find(';') == 0)
+			break;
+		if (value.find(';') != std::string::npos)
+		{
+			value = value.substr(0, value.find(';'));
+			_indexes.push_back(value);
+			break;
+		}
+		_indexes.push_back(value);
+	}
+	if (_indexes.empty())
+		throw EmptyValueError(pos, line);
+}
+
 void LocationConfig::setCgiExtension(const std::string &line, const size_t &pos)
 {
 	std::string key;
@@ -131,6 +161,10 @@ void LocationConfig::PrintLocationConfig()
 	std::cout << "cgi_extension: ";
 	for (size_t i = 0; i < this->_cgi_extension.size(); i++)
 		std::cout << this->_cgi_extension[i] << " ";
+	std::cout << std::endl;
+	std::cout << "index: ";
+	for (size_t i = 0; i < this->_indexes.size(); i++)
+		std::cout << this->_indexes[i] << " ";
 	std::cout << std::endl;
 	std::cout << "error_page: ";
 	for (std::map<int, std::string>::iterator it = this->_errorPage.begin(); it != this->_errorPage.end(); it++)

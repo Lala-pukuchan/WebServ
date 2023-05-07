@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:46:18 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/05 12:14:57 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/07 11:01:58 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "LocationConfig.hpp"
 #include "Servers.hpp"
 
-ServerConfig::ServerConfig(void) : _port("")
+ServerConfig::ServerConfig(void) : _port(""), _maxBodySize(1)
 {
 }
 
@@ -52,12 +52,16 @@ void ServerConfig::setServerConfig(const std::vector<std::string> &configStrings
 			setIndex(line, pos);
 		else if (key == "cgi_extension")
 			setCgiExtension(line, pos);
+		else if (key == "allow_methods")
+			setAllowedMethods(line, pos);
 		else if (key == "server_name")
 			this->_serverName = getOneValue(line, pos);
 		else if (key == "listen")
 			this->_port = getOneValue(line, pos);
 		else if (key == "upload_path")
 			this->_upload_path = getOneValue(line, pos);
+		else if (key == "client_max_body_size")
+			this->_maxBodySize = std::stoi(getOneValue(line, pos));
 		else if (key == "error_page" || key == "return")
 			getIntValue(line);
 		else
@@ -159,6 +163,34 @@ void ServerConfig::setCgiExtension(const std::string &line, const size_t &pos)
 		throw EmptyValueError(pos, line);
 }
 
+void ServerConfig::setAllowedMethods(const std::string &line, const size_t &pos)
+{
+	std::string key;
+	std::istringstream iss(line);
+
+	iss >> key;
+	while(1)
+	{
+		std::string value;
+		iss >> value;
+		if (value.empty())
+			throw SemicolonError(pos, line);
+		if (value.find(';') == 0)
+			break;
+		if (value.find(';') != std::string::npos)
+		{
+			value = value.substr(0, value.find(';'));
+			if (value != "GET" && value != "HEAD" && value != "POST" &&  value != "PUT" &&value != "DELETE" && value != "OPTIONS")
+				throw InvalidMethodError(pos, line);
+			_allowedMethods.push_back(value);
+			break;
+		}
+		_allowedMethods.push_back(value);
+	}
+	if (_allowedMethods.empty())
+		throw EmptyValueError(pos, line);
+}
+
 std::string ServerConfig::getPortString(void)
 {
 	return (this->_port);
@@ -176,6 +208,10 @@ void ServerConfig::PrintServerConfig()
 	std::cout << "cgi_extension: ";
 	for (size_t i = 0; i < this->_cgi_extension.size(); i++)
 		std::cout << this->_cgi_extension[i] << " ";
+	std::cout << std::endl;
+	std::cout << "allowed_methods: ";
+	for (size_t i = 0; i < this->_allowedMethods.size(); i++)
+		std::cout << this->_allowedMethods[i] << " ";
 	std::cout << std::endl;
 	std::cout << "location: " << std::endl;
 	std::cout << "-----" << std::endl;

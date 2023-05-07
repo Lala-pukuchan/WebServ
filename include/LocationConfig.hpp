@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 14:14:53 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/05 11:51:01 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/07 11:05:52 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,12 @@ class LocationConfig
 		std::string _autoindex;
 		std::string _upload_path;
 		std::vector<std::string> _cgi_extension;
+		std::vector<std::string> _indexes;
 		std::map<int, std::string> _errorPage;
 		std::map<int, std::string> _return_redirect;
 
 		void setCgiExtension(const std::string &line, const size_t &pos);
+		void setIndex(const std::string &line, const size_t &pos);
 		void getIntValue(const std::string &line);
 		std::string getOneValue(const std::string &line, size_t &pos);
 	public:
