@@ -21,6 +21,7 @@ class ClientRequest
 		string _file_absolute_path;
 		string _file_ext;
 		string _request_message_body;
+		string _path_info;
 
 		// 再定義せずに、ServerConfigを継承
 		vector<string> _allowedMethod;
@@ -38,6 +39,7 @@ class ClientRequest
 		vector<string> getAllowedMethod () const;
 		int getMaxBodySize() const;
 		string getRequestMessageBody() const;
+		string getPathInfo() const;
 
 };
 

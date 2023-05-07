@@ -1,5 +1,6 @@
 #include "ClientRequest.hpp"
 #include "ServerResponse.hpp"
+#include "CgiExe.hpp"
 
 map<string, string> mime_mapper (mime, mime + mime_size);
 map<string, string> status_mapper (status, status + status_size);
@@ -52,7 +53,11 @@ void ServerResponse::setRes(string status_code, string response_message_body, st
 	_res = os.str();
 }
 
-void ServerResponse::Cgi(){}
+bool ServerResponse::isCgi(){
+	// check whether cgi or not
+	return (true);
+	// return (false);
+}
 
 bool ServerResponse::existFile(){
 	struct stat buffer;
@@ -81,10 +86,16 @@ void ServerResponse::getFileContents(){
 }
 
 void ServerResponse::Get(){
-	// get file
-	//if (isCgi())
-	//	Cgi();
-	//else
+	// cgi / get file
+	if (isCgi()){
+		CgiExe cgi(_req);
+		cgi.exe();
+		string status;
+		if ((status = cgi.getStatus()) == "200")
+			_res = cgi.getResult();
+		else
+			setRes(status, "", "");
+	} else
 		getFileContents();
 }
 
@@ -95,9 +106,16 @@ void ServerResponse::Head(){
 
 void ServerResponse::Post(){
 
-	//if (isCgi())
-	//	Cgi();
-	//else
+	// cgi / upload file
+	if (isCgi()){
+		CgiExe cgi(_req);
+		cgi.exe();
+		string status;
+		if ((status = cgi.getStatus()) == "200")
+			_res = cgi.getResult();
+		else
+			setRes(status, "", "");
+	} else
 		setRes("200", "POST success", "text/plain");
 }
 
@@ -145,10 +163,6 @@ void ServerResponse::Options(){
 	setRes("200", "", "");
 }
 
-void ServerResponse::Trace(){
-	cout << "Trace method is called." << endl;
-}
-
 ServerResponse::ServerResponse (ClientRequest &req) : 
 	_req(req), _res(""), _method(_req.getMethod()), _file_absolute_path(_req.getFileAbsolutePath()){
 
@@ -163,13 +177,13 @@ ServerResponse::ServerResponse (ClientRequest &req) :
 	}
 
 	// methods
-	string methods[7] = { "GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE" };
-	void (ServerResponse::*funcs[7])()
+	string methods[6] = { "GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS" };
+	void (ServerResponse::*funcs[6])()
 		= { &ServerResponse::Get, &ServerResponse::Head, &ServerResponse::Post, &ServerResponse::Put, 
-			&ServerResponse::Delete, &ServerResponse::Options, &ServerResponse::Trace};
+			&ServerResponse::Delete, &ServerResponse::Options };
 
 	// exe method func
-	for (int i = 0; i < 7; i++){
+	for (int i = 0; i < 6; i++){
 		if (_method == methods[i])
 		{
 			(this->*funcs[i])();
@@ -190,4 +204,9 @@ int main(void)
 	cout << res.getResponse();
 	cout << "--- response from server (END)   ---" << endl;
 	return (0);
+}
+
+__attribute__((destructor))
+static void destructor() {
+	system("leaks -q a.out");
 }

@@ -4,7 +4,7 @@
 #include "ClientRequest.hpp"
 
 // mime-type
-typedef std::pair<std::string, std::string> stringpair_t;
+typedef pair<string, string> stringpair_t;
 const stringpair_t mime[] = {
   stringpair_t(".txt", "text/plain"),
   stringpair_t(".html", "text/html"),
@@ -22,7 +22,7 @@ const stringpair_t mime[] = {
   stringpair_t(".pdf", "application/pdf")
 };
 const int mime_size = sizeof(mime) / sizeof(mime[0]);
-extern std::map <std::string, std::string> mime_mapper;
+extern map <string, string> mime_mapper;
 
 // response status
 const stringpair_t status[] = {
@@ -36,7 +36,7 @@ const stringpair_t status[] = {
   stringpair_t("500", "Internal Server Error")
 };
 const int status_size = sizeof(status) / sizeof(status[0]);
-extern std::map <std::string, std::string> status_mapper;
+extern map <string, string> status_mapper;
 
 class ServerResponse
 {
@@ -55,8 +55,8 @@ class ServerResponse
 		// create res
 		void setRes(string status_code, string response_message_body, string content_type);
 
-		// cgi exe
-		void Cgi();
+		// cgi
+		bool isCgi();
 
 		// handle file
 		bool existFile();
@@ -70,7 +70,6 @@ class ServerResponse
 		void Put();
 		void Delete();
 		void Options();
-		void Trace();
 
 	public:
 		// const & dest
