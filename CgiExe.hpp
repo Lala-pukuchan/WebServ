@@ -4,6 +4,8 @@
 #include "ClientRequest.hpp"
 #include <unistd.h>
 
+#define BUFFER_SIZE 42
+
 class CgiExe
 {
 

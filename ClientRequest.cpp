@@ -5,11 +5,11 @@ ClientRequest::ClientRequest (){
 	// need to initialize firstly
 
 	// from req
-	_method = "GET";
+	_method = "POST";
 	_contentLength = "40";
 	_file_absolute_path = "./test/cgi_tester";
 	_file_ext = ".html";
-	_request_message_body = "test2";
+	_request_message_body = "aaa";
 	_path_info = "a";
 
 	// from conf

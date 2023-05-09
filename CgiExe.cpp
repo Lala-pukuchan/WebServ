@@ -3,9 +3,6 @@
 
 CgiExe::CgiExe (ClientRequest &req) : _req(req), _result(""), _status(""){
 
-	// cmd
-	_cmd = _req.getFileAbsolutePath().c_str();
-
 	// arg
 	_arg = new char*[2];
 	_arg[0] = new char[strlen(_cmd) + 1];
@@ -45,6 +42,14 @@ CgiExe::~CgiExe (){
 
 void CgiExe::exe (){
 
+	// write input
+	FILE *tmpFile = tmpfile();
+	int	inputFd = fileno(tmpFile);
+	if (_req.getMethod() == "POST"){
+		write(inputFd, _req.getRequestMessageBody().c_str(), _req.getRequestMessageBody().size());
+		lseek(inputFd, 0, SEEK_SET);
+	}
+
 	// pipe
 	int fd[2];
 	if (pipe(fd) == -1){
@@ -55,26 +60,29 @@ void CgiExe::exe (){
 
 	// fork
 	pid_t pid = fork();
+
 	if (pid == -1){
+	
 		cout << "Failed to fork." << endl;
 		_status = "500";
 		return ;
-	}
-	// execute cgi script in child process
-	if (!pid){
+	
+	} else if (!pid){
 
-		// handle pipe fd
-		close(STDIN_FILENO);
-		close(fd[0]);
+		// stdin
+		dup2(inputFd, STDIN_FILENO);
+
+		// stdout
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[1]);
 		
 		// exe
-		execve(_cmd, _arg, _env);
+		execve(_req.getFileAbsolutePath().c_str(), _arg, _env);
 
 		// exe error
 		cout << "Failed to exe." << endl;
 		_status = "500";
+
 	} else {
 
 		// wait
@@ -82,13 +90,21 @@ void CgiExe::exe (){
 		waitpid(pid, NULL, 0);
 
 		// result
-		_status = "200";
-		// 直す必要あり
-		char buf[100];
-		read(fd[0], buf, 100);
-		cout << "result: ";
-		cout << buf;
+		int size = 0;
+		char buf[BUFFER_SIZE + 1];
+		while ((size = read(fd[0], buf, BUFFER_SIZE)) > 0)
+		{
+			buf[size] = '\0';
+			_result += buf;
+		}
+
+		// should be checked
+		if (_status != "500")
+			_status = "200";
 	}
+
+	fclose(tmpFile);
+	close(inputFd);
 }
 
 string CgiExe::getResult() const{ return (_result); }
