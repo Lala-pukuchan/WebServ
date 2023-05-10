@@ -6,7 +6,7 @@ CONFIGS := LocationConfig.cpp ServerConfig.cpp Servers.cpp
 CONFIGS := $(addprefix $(CONFIGDIR)/, $(CONFIGS))
 
 SERVERDIR := server
-SERVERS := ServerSocket.cpp
+SERVERS := ServerSocket.cpp Webserv.cpp
 SERVERS := $(addprefix $(SERVERDIR)/, $(SERVERS))
 
 SRCDIR	:= src
