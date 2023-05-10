@@ -2,7 +2,8 @@
 #include "ServerConfig.hpp"
 
 // constr
-ClientRequest::ClientRequest (){
+ClientRequest::ClientRequest () : _is_cgi(false)
+{
 	// need to initialize firstly
 
 	// from req
@@ -21,7 +22,7 @@ ClientRequest::ClientRequest (){
 	_maxBodySize = 50;
 }
 
-ClientRequest::ClientRequest(string requestMessage, ServerConfig Server)
+ClientRequest::ClientRequest(string requestMessage, ServerConfig Server) : _is_cgi(false)
 {
 	_server = Server;
 	readClientRequest(requestMessage);
@@ -92,6 +93,7 @@ void ClientRequest::setPath()
 		std::string sub_path = _path.substr(LongestMatchPath.length());
 		if (sub_path.find(".") != std::string::npos)
 		{
+			_is_cgi = true;
 			_file_absolute_path = location.getAlias() + sub_path.substr(0, sub_path.find("/"));
 			_file_ext = (sub_path.substr(sub_path.find("."))).substr(0, sub_path.find("/") - 1);
 			if (sub_path.find("/") != std::string::npos)
@@ -114,6 +116,7 @@ void ClientRequest::PrintRequest()
 	std::cout << "content_type: " << _content_type << std::endl;
 	std::cout << "request_message_body: " << _request_message_body << std::endl;
 	std::cout << "file_absolute_path: " << _file_absolute_path << std::endl;
+	std::cout << "is_cgi: " << _is_cgi << std::endl;
 	std::cout << "file_ext: " << _file_ext << std::endl;
 	std::cout << "cgi_path_info: " << _cgi_path_info << std::endl;
 	std::cout << "-------------------------------------" << std::endl;
@@ -138,3 +141,5 @@ int ClientRequest::getMaxBodySize() const { return (_maxBodySize); }
 string ClientRequest::getRequestMessageBody() const { return (_request_message_body); }
 
 string ClientRequest::getPathInfo() const { return (_path); }
+
+bool ClientRequest::getIsCgi() const { return (_is_cgi); }

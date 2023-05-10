@@ -32,11 +32,15 @@ class ClientRequest
 		string _port;
 		string _server_name;
 		string _content_type;
+		bool _is_cgi;
 
 		vector<string> _allowedMethod;
 		int _maxBodySize;
 
 		ServerConfig _server;
+
+		void readClientRequest(std::string requestMessage);
+		void setPath();
 
 	public:
 		ClientRequest ();
@@ -52,8 +56,7 @@ class ClientRequest
 		int getMaxBodySize() const;
 		string getRequestMessageBody() const;
 		string getPathInfo() const;
-		void readClientRequest(std::string requestMessage);
-		void setPath();
+		bool getIsCgi() const;
 
 		//for debug
 		void PrintRequest();
