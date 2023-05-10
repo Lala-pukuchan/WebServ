@@ -6,15 +6,12 @@
 /*   By: hyanagim <hyanagim@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 11:32:59 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/05 17:10:28 by hyanagim         ###   ########.fr       */
+/*   Updated: 2023/05/10 13:55:08 by hyanagim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <map>
 #include "Servers.hpp"
+#include "Webserv.hpp"
 
 int main(int argc, char **argv)
 {
@@ -35,6 +32,7 @@ int main(int argc, char **argv)
 	{
 		std::cerr << e.what() << '\n';
 	}
-	servers.makeServerSocket();
+	Webserv webserv(servers);
+	webserv.makeServerSocket();
 	return (0);
 }
