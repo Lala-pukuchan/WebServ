@@ -12,6 +12,8 @@ class Webserv
 		Servers _servs;
 		map<int, vector<ServerConfig> > _sockets;
 
+		void printdebug();
+
 	public:
 		Webserv(Servers& servers);
 		~Webserv();
