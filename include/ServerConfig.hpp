@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:46:22 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/10 21:17:50 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/10 22:26:14 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ class ServerConfig
 
 		std::map<int, std::string> _return_redirect;
 		std::string _upload_path;
-		bool cgi; //要る？
+		bool _cgi; //要る？
 		std::vector<std::string> _cgi_extension;
 
 		void setLocationConfig(const std::string &value, const std::vector<std::string> &configStrings, size_t &pos);
@@ -52,8 +52,20 @@ class ServerConfig
 		
 
 		void setServerConfig(const std::vector<std::string> &configStrings, size_t &pos);
-		std::string getPortString();
-		std::map<std::string, LocationConfig> getLocationConfigs();
+
+		//getter
+		std::string getPortString() const;
+		std::string getServerName() const;
+		std::vector<std::string> getAllowedMethods() const;
+		int getMaxBodySize() const;
+		std::vector<std::string> getIndexes() const;
+		std::map<std::string, LocationConfig> getLocationConfigs() const;
+		std::map<int, std::string> getErrorPage() const;
+		std::map<int, std::string> getReturnRedirect() const;
+		std::string getUploadPath() const;
+		std::string getAutoindex() const;
+		bool getCgi() const;
+		std::vector<std::string> getCgiExtension() const;
 
 		//for debug
 		void PrintServerConfig();
