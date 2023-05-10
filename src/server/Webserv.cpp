@@ -37,3 +37,51 @@ void Webserv::makeServerSocket(void)
 	}
 	printdebug();
 }
+
+// void Webserv::run(void)
+// {
+// 	fd_set	masterRecvFds;
+// 	fd_set	masterSendFds;
+// 	fd_set	recvFds;
+// 	fd_set	sendFds;
+// 	int		maxFd;
+// 	int		readyNum;
+// 	struct timeval	timeout;
+// 	map<int, string>	fd_response;
+// 	timeout.tv_sec  = 0;
+// 	timeout.tv_usec = 100;
+
+// 	maxFd = setFds(_sockets, &masterRecvFds);
+
+// 	FD_ZERO(&masterSendFds);
+// 	while(true)
+// 	{
+// 		memcpy(&recvFds, &masterRecvFds, sizeof(masterRecvFds));//
+// 		memcpy(&sendFds, &masterSendFds, sizeof(masterSendFds));//FD_ZEROとFD_SETでいいかも
+		
+// 		readyNum = select(maxFd + 1, &recvFds, &sendFds, NULL, &timeout);
+// 		if (readyNum == 0)
+// 			continue ;
+// 		else if (readyNum == -1)
+// 			perror("select");
+// 		else
+// 		{
+// 			for (int fd = 0; maxFd + 1; fd++)
+// 			{
+// 				if (FD_ISSET(fd, &recvFds))
+// 				{
+// 					if (containsListeningSocket(fd, _sockets)) // 接続が確立されるsocketsの方に含まれるなら，
+// 						createClntSocket(fd, &masterRecvFds, &maxFd); //acceptする
+// 					else
+// 						storeRequestToMap(fd, &masterRecvFds, &masterSendFds, fd_response); //recvする
+// 				}
+// 				else if (FD_ISSET(fd, &sendFds))
+// 				{
+// 					sendResponse(fd, &masterRecvFds, &masterSendFds, &maxFd, fd_response);  //sendする
+// 					std::cout << "clnt_socket: " <<  fd << ", maxFd: " << maxFd << std::endl;
+// 				}
+				
+// 			}
+// 		}
+// 	}
+// }

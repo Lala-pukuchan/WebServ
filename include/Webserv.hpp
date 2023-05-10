@@ -20,6 +20,7 @@ class Webserv
 		~Webserv();
 
 		void makeServerSocket(void);
+		// void run(void);
 };
 
 #endif
