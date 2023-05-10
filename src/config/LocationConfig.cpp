@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:13:34 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/10 21:25:18 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/10 22:32:10 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,6 @@ LocationConfig::LocationConfig(void)
 
 LocationConfig::~LocationConfig(void)
 {
-}
-
-std::string LocationConfig::getAlias()
-{
-	return (this->_alias);
 }
 
 
@@ -182,3 +177,17 @@ void LocationConfig::PrintLocationConfig()
 		std::cout << it->first << " " << it->second << " ";
 	std::cout << std::endl;
 }
+
+std::string LocationConfig::getAlias() const { return (this->_alias); }
+
+std::string LocationConfig::getAutoindex() const { return (this->_autoindex); }
+
+std::string LocationConfig::getUploadPath() const { return (this->_upload_path); }
+
+std::vector<std::string> LocationConfig::getCgiExtension() const { return (this->_cgi_extension); }
+
+std::vector<std::string> LocationConfig::getIndexes() const { return (this->_indexes); }
+
+std::map<int, std::string> LocationConfig::getErrorPage() const { return (this->_errorPage); }
+
+std::map<int, std::string> LocationConfig::getReturnRedirect() const { return (this->_return_redirect); }
