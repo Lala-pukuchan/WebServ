@@ -11,6 +11,7 @@ class Webserv
 	private:
 		Servers _servs;
 		map<int, vector<ServerConfig> > _sockets;
+		map<int, vector<ServerConfig>& > acceptedSockets;
 
 		void printdebug();
 

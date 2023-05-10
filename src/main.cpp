@@ -6,14 +6,10 @@
 /*   By: hyanagim <hyanagim@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 11:32:59 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/10 13:01:43 by hyanagim         ###   ########.fr       */
+/*   Updated: 2023/05/10 13:55:08 by hyanagim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <map>
 #include "Servers.hpp"
 #include "Webserv.hpp"
 
