@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:13:34 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/07 11:08:16 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/10 21:25:18 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,11 @@ LocationConfig::LocationConfig(void)
 
 LocationConfig::~LocationConfig(void)
 {
+}
+
+std::string LocationConfig::getAlias()
+{
+	return (this->_alias);
 }
 
 
@@ -58,6 +63,8 @@ void LocationConfig::setLocationConfig(const std::vector<std::string> &configStr
 		else
 			throw InvalidKeyError(pos, line);
 	}
+	if (this->_alias.empty())
+		throw EmptyAliasError();
 	
 }
 

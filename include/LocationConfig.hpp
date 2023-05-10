@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 14:14:53 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/07 11:05:52 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/10 21:25:27 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ class LocationConfig
 		~LocationConfig(void);
 		
 		void setLocationConfig(const std::vector<std::string> &configStrings, size_t &pos);
+		std::string getAlias();
 
 		//for debug
 		void PrintLocationConfig();

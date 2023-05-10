@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:46:22 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/07 10:57:16 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/10 21:17:50 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,13 @@ class ServerConfig
 
 	public:
 		ServerConfig();
+		ServerConfig& operator=(const ServerConfig &src);
 		~ServerConfig();
+		
+
 		void setServerConfig(const std::vector<std::string> &configStrings, size_t &pos);
 		std::string getPortString();
+		std::map<std::string, LocationConfig> getLocationConfigs();
 
 		//for debug
 		void PrintServerConfig();
@@ -144,4 +148,16 @@ class InvalidMethodError : public std::exception
 		~InvalidMethodError() throw() {}
 };
 
+class EmptyAliasError : public std::exception
+{
+	private:
+		std::string _message;
+
+	public:
+		virtual const char* what() const throw()
+		{
+			return ("alias is empty");
+		}
+		~EmptyAliasError() throw() {}
+};
 #endif

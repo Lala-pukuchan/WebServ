@@ -61,11 +61,11 @@ bool ServerResponse::isCgi(){
 
 bool ServerResponse::existFile(){
 	struct stat buffer;
-	return (!stat(_file_absolute_path.c_str(), &buffer));
+	return (!stat(_file_true_path.c_str(), &buffer));
 }
 
 void ServerResponse::getFileContents(){
-	ifstream ifs(_file_absolute_path);
+	ifstream ifs(_file_true_path);
 	//if (isDir())
 	//{
 	//	cout << "path is directory: " << path << endl;
@@ -123,11 +123,11 @@ void ServerResponse::Put(){
 
 	// create / update file
 	bool exist = false;
-	ifstream ifs(_file_absolute_path);
+	ifstream ifs(_file_true_path);
 	if ((exist = existFile()) && !ifs.is_open()){
 		setRes("403", "", "");
 	} else {
-		ofstream ofs(_file_absolute_path, ios::trunc);
+		ofstream ofs(_file_true_path, ios::trunc);
 		ofs << _req.getRequestMessageBody();
 		if (!exist)
 			setRes("201", "", "");
@@ -141,12 +141,12 @@ void ServerResponse::Put(){
 void ServerResponse::Delete(){
 
 	// delte file
-	ifstream ifs(_file_absolute_path);
+	ifstream ifs(_file_true_path);
 	if (!existFile()){
 		setRes("404", "", "");
 	} else {
 		try {
-			if (!remove(_file_absolute_path.c_str()))
+			if (!remove(_file_true_path.c_str()))
 				setRes("200", "", "");
 			else
 				setRes("403", "", "");
@@ -164,7 +164,7 @@ void ServerResponse::Options(){
 }
 
 ServerResponse::ServerResponse (ClientRequest &req) : 
-	_req(req), _res(""), _method(_req.getMethod()), _file_absolute_path(_req.getFileAbsolutePath()){
+	_req(req), _res(""), _method(_req.getMethod()), _file_true_path(_req.getFileAbsolutePath()){
 
 	// method / content length error
 	bool m = false;

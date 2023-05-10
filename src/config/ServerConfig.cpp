@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:46:18 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/07 11:01:58 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/10 21:11:06 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,31 @@ ServerConfig::ServerConfig(void) : _port(""), _maxBodySize(1)
 
 ServerConfig::~ServerConfig(void)
 {
+}
+
+ServerConfig& ServerConfig::operator=(const ServerConfig& src)
+{
+	if (this != &src)
+	{
+		this->_serverName = src._serverName;
+		this->_port = src._port;
+		this->_allowedMethods = src._allowedMethods;
+		this->_maxBodySize = src._maxBodySize;
+		this->_errorPage = src._errorPage;
+		this->_locations = src._locations;
+		this->_indexes = src._indexes;
+		this->_autoindex = src._autoindex;
+		this->_return_redirect = src._return_redirect;
+		this->_upload_path = src._upload_path;
+		this->cgi = src.cgi;
+		this->_cgi_extension = src._cgi_extension;
+	}
+	return (*this);
+}
+
+std::map<std::string, LocationConfig> ServerConfig::getLocationConfigs()
+{
+	return (_locations);
 }
 
 void ServerConfig::setServerConfig(const std::vector<std::string> &configStrings, size_t &pos)
