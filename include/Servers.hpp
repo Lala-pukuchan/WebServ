@@ -6,7 +6,7 @@
 /*   By: hyanagim <hyanagim@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:51:31 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/05 17:26:53 by hyanagim         ###   ########.fr       */
+/*   Updated: 2023/05/10 13:12:05 by hyanagim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ class Servers
 		map<string, vector<ServerConfig> > _servers;
 		ServerConfig _defaultServer;
 		vector<string> _configStrings;
-		map<int, vector<ServerConfig> > _sockets;
 
 	public:
 		Servers();
@@ -36,7 +35,8 @@ class Servers
 
 		void ReadConfig(string path);
 		void setServersConfig(void);
-		void makeServerSocket(void);
+
+		map<string, vector<ServerConfig> >& getServers();
 
 		//for debug
 		void PrintConfigFile();
