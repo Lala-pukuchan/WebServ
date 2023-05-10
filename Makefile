@@ -53,5 +53,8 @@ fclean : clean
 
 re : fclean all
 
-.PHONY: all clean fclean re
+t : all
+	./webserv default.conf
+
+.PHONY: all clean fclean re t
 
