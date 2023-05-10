@@ -114,7 +114,7 @@ void ClientRequest::PrintRequest()
 	std::cout << "port: " << _port << std::endl;
 	std::cout << "contentLength: " << _contentLength << std::endl;
 	std::cout << "content_type: " << _content_type << std::endl;
-	std::cout << "request_message_body: " << _request_message_body << std::endl;
+	std::cout << "request_message_body: " << std::endl << _request_message_body;
 	std::cout << "file_absolute_path: " << _file_absolute_path << std::endl;
 	std::cout << "is_cgi: " << _is_cgi << std::endl;
 	std::cout << "file_ext: " << _file_ext << std::endl;
