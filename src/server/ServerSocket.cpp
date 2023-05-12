@@ -46,6 +46,7 @@ int ServerSocket::makeSocket(string port) {
 		freeaddrinfo(res);
 		return (-1);
 	}
+	fcntl(_socketFd, F_SETFL, O_NONBLOCK);
 	freeaddrinfo(res);
 	return (0);
 }
