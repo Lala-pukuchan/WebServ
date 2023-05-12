@@ -1,25 +1,8 @@
 #include "ClientRequest.hpp"
 #include "ServerConfig.hpp"
 
-// constr
 ClientRequest::ClientRequest () : _is_cgi(false)
 {
-	// need to initialize firstly
-
-	// from req
-	_method = "POST";
-	_contentLength = "40";
-	_file_absolute_path = "./test/cgi_tester";
-	_file_ext = ".html";
-	_request_message_body = "aaa";
-	_path = "a";
-
-	// from conf
-	string m[] = { "GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE" };
-	for (int i = 0; i < 7; i++){
-		_allowedMethod.push_back(m[i]);
-	}
-	_maxBodySize = 50;
 }
 
 ClientRequest::ClientRequest(string requestMessage, ServerConfig Server) : _is_cgi(false)
