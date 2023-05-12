@@ -6,7 +6,7 @@
 /*   By: hyanagim <hyanagim@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 11:32:59 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/10 13:55:08 by hyanagim         ###   ########.fr       */
+/*   Updated: 2023/05/12 21:00:14 by hyanagim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,6 @@ int main(int argc, char **argv)
 	}
 	Webserv webserv(servers);
 	webserv.makeServerSocket();
+	webserv.run();
 	return (0);
 }

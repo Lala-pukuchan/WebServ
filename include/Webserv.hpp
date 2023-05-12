@@ -10,8 +10,16 @@ class Webserv
 {
 	private:
 		Servers _servs;
+		static struct timeval _timeout;
+		int _maxFd;
 		map<int, vector<ServerConfig> > _sockets;
-		map<int, vector<ServerConfig>& > acceptedSockets;
+		map<int, vector<ServerConfig>& > _acceptedSockets;
+
+		void setFds(fd_set *masterRecvFds);
+		bool matchListenFd(int fd);
+		void makeAcceptedFd(int fd, fd_set *masterRecvFds);
+		void recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, map<int ,string> &strage);
+		void sendResponse(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, map<int, string> &strage);
 
 		void printdebug();
 
@@ -20,7 +28,7 @@ class Webserv
 		~Webserv();
 
 		void makeServerSocket(void);
-		// void run(void);
+		void run(void);
 };
 
 #endif

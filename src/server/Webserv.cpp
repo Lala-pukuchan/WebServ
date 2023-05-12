@@ -2,9 +2,144 @@
 
 // #define DEBUG
 
+#define BUFSIZE 1024
+struct timeval Webserv::_timeout = {0, 200};
+
 Webserv::Webserv(Servers &servers) : _servs(servers) {}
 
 Webserv::~Webserv() {}
+
+//
+//public
+//
+void Webserv::makeServerSocket(void)
+{
+	map<string, vector<ServerConfig> >::iterator it = _servs.getServers().begin();
+
+	for (; it != _servs.getServers().end(); ++it)
+	{
+		ServerSocket socket(it->first);
+		_sockets[socket.getFd()] = it->second;
+		if (_maxFd < socket.getFd())
+			_maxFd = socket.getFd();
+	}
+	printdebug();
+}
+
+void Webserv::run(void)
+{
+	fd_set	masterRecvFds;
+	fd_set	masterSendFds;
+	fd_set	recvFds; // accept(接続要求), recv（受け取り）
+	fd_set	sendFds; // send
+	map<int, string>	strage;
+
+	FD_ZERO(&masterRecvFds);
+	FD_ZERO(&masterSendFds);
+	setFds(&masterRecvFds);
+
+	while(true)
+	{
+		FD_ZERO(&recvFds);
+		FD_ZERO(&sendFds);
+		memcpy(&recvFds, &masterRecvFds, sizeof(masterRecvFds));
+		memcpy(&sendFds, &masterSendFds, sizeof(masterSendFds));
+		
+		switch (select(_maxFd + 1, &recvFds, &sendFds, NULL, &_timeout))
+		{
+			case -1:
+				perror("select");
+				break;
+			case 0:
+				break;
+			default:
+				for (int fd = 0; fd < _maxFd + 1; fd++)
+				{
+					if (FD_ISSET(fd, &recvFds))
+						if (matchListenFd(fd)) // 接続が確立されるsocketsの方に含まれるなら，
+							makeAcceptedFd(fd, &masterRecvFds); //acceptする
+						else
+							recvRequest(fd, &masterRecvFds, &masterSendFds, strage); //recvする
+					else if (FD_ISSET(fd, &sendFds))
+						sendResponse(fd, &masterRecvFds, &masterSendFds, strage);  //sendする
+				}
+		}
+	}
+}
+
+
+//
+//private
+//
+
+void Webserv::setFds(fd_set *masterRecvFds)
+{
+	map<int, vector<ServerConfig> > ::iterator it = _sockets.begin();
+
+	for (; it != _sockets.end(); it++)
+	{
+		FD_SET(it->first, masterRecvFds);
+		cout << "port is " << it->first << endl;
+	}
+}
+
+bool Webserv::matchListenFd(int fd)
+{
+	if (_sockets.find(fd) == _sockets.end())
+		return false;
+	return true;
+}
+
+void Webserv::makeAcceptedFd(int fd, fd_set *masterRecvFds)
+{
+	int acceptedFd;
+
+	while (true)
+	{
+		acceptedFd = accept(fd, NULL, NULL);
+		fcntl(acceptedFd, F_SETFL, O_NONBLOCK);
+		if (acceptedFd == -1)
+		{
+		 	if (errno != EWOULDBLOCK) //ノンブロッキングでacceptedFdが-1になっているときは，エラーにならない
+				perror("accept");
+			return ;
+		}
+		FD_SET(acceptedFd, masterRecvFds);
+		if (_maxFd < acceptedFd)
+			_maxFd = acceptedFd;
+	}
+}
+
+void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, map<int ,string> &strage)
+{
+	char buffer[BUFSIZE + 1];
+	int len;
+
+	memset(buffer, 0, BUFSIZE + 1);
+	len = recv(fd, buffer, BUFSIZE, 0);
+	if (len == -1)
+		perror("recv");
+	strage[fd] += buffer;
+	cout << "len is " << len << endl;
+	if (strage[fd][BUFSIZE - 1] == 0) // end of file
+	{
+		FD_CLR(fd, masterRecvFds);
+		FD_SET(fd, masterSendFds);
+		cout << "buffer is " << strage[fd] << endl;
+	}
+}
+
+void Webserv::sendResponse(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, map<int, string> &strage)
+{
+	int len;
+
+	len = send(fd, strage[fd].c_str(), strage[fd].size(), 0);
+	if (len == -1)
+		perror("send");
+	FD_CLR(fd, masterSendFds);
+	close(fd);
+	(void) masterRecvFds;
+}
 
 #ifdef DEBUG
 void Webserv::printdebug()
@@ -23,65 +158,3 @@ void Webserv::printdebug()
 #else
 void Webserv::printdebug() {}
 #endif
-
-void Webserv::makeServerSocket(void)
-{
-	map<string, vector<ServerConfig> >::iterator it = _servs.getServers().begin();
-
-	for (; it != _servs.getServers().end(); ++it)
-	{
-		ServerSocket socket(it->first);
-		_sockets[socket.getFd()] = it->second;
-		// for (unsigned long i = 0; i < it->second.size(); i++)
-		// 	_sockets[socket.getFd()].push_back(it->second[i]);
-	}
-	printdebug();
-}
-
-// void Webserv::run(void)
-// {
-// 	fd_set	masterRecvFds;
-// 	fd_set	masterSendFds;
-// 	fd_set	recvFds;
-// 	fd_set	sendFds;
-// 	int		maxFd;
-// 	int		readyNum;
-// 	struct timeval	timeout;
-// 	map<int, string>	fd_response;
-// 	timeout.tv_sec  = 0;
-// 	timeout.tv_usec = 100;
-
-// 	maxFd = setFds(_sockets, &masterRecvFds);
-
-// 	FD_ZERO(&masterSendFds);
-// 	while(true)
-// 	{
-// 		memcpy(&recvFds, &masterRecvFds, sizeof(masterRecvFds));//
-// 		memcpy(&sendFds, &masterSendFds, sizeof(masterSendFds));//FD_ZEROとFD_SETでいいかも
-		
-// 		readyNum = select(maxFd + 1, &recvFds, &sendFds, NULL, &timeout);
-// 		if (readyNum == 0)
-// 			continue ;
-// 		else if (readyNum == -1)
-// 			perror("select");
-// 		else
-// 		{
-// 			for (int fd = 0; maxFd + 1; fd++)
-// 			{
-// 				if (FD_ISSET(fd, &recvFds))
-// 				{
-// 					if (containsListeningSocket(fd, _sockets)) // 接続が確立されるsocketsの方に含まれるなら，
-// 						createClntSocket(fd, &masterRecvFds, &maxFd); //acceptする
-// 					else
-// 						storeRequestToMap(fd, &masterRecvFds, &masterSendFds, fd_response); //recvする
-// 				}
-// 				else if (FD_ISSET(fd, &sendFds))
-// 				{
-// 					sendResponse(fd, &masterRecvFds, &masterSendFds, &maxFd, fd_response);  //sendする
-// 					std::cout << "clnt_socket: " <<  fd << ", maxFd: " << maxFd << std::endl;
-// 				}
-				
-// 			}
-// 		}
-// 	}
-// }
