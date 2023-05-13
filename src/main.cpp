@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: rukobaya <rukobaya@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 11:32:59 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/10 22:02:15 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/13 15:36:11 by rukobaya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Servers.hpp"
 #include "Webserv.hpp"
 #include "ClientRequest.hpp"
+#include "ServerResponse.hpp"
 
 int main(int argc, char **argv)
 {
@@ -52,5 +53,11 @@ int main(int argc, char **argv)
 
 	//for debug
 	clientrequest.PrintRequest();
+
+	ServerResponse res = ServerResponse(clientrequest);
+	cout << "--- response from server (START) ---" << endl;
+	cout << res.getResponse();
+	cout << "--- response from server (END)   ---" << endl;
+	
 	return (0);
 }
