@@ -61,7 +61,9 @@ void Webserv::run(void)
 						else
 							recvRequest(fd, &masterRecvFds, &masterSendFds, strage); //recvする
 					else if (FD_ISSET(fd, &sendFds))
+					{
 						sendResponse(fd, &masterRecvFds, &masterSendFds, strage);  //sendする
+					}
 				}
 		}
 	}
@@ -88,7 +90,7 @@ void Webserv::setFds(fd_set *masterRecvFds)
 void Webserv::makeAcceptedFd(int fd, fd_set *masterRecvFds)
 {
 	int acceptedFd;
-	
+
 	while (true)
 	{
 		acceptedFd = accept(fd, NULL, NULL);
@@ -98,6 +100,7 @@ void Webserv::makeAcceptedFd(int fd, fd_set *masterRecvFds)
 				perror("accept");
 			return ;
 		}
+		_acceptedSockets[acceptedFd] = _sockets[fd];
 		fcntl(acceptedFd, F_SETFL, O_NONBLOCK);
 		FD_SET(acceptedFd, masterRecvFds);
 		if (_maxFd < acceptedFd)
