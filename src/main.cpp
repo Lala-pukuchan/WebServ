@@ -1,6 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hyanagim <hyanagim@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/05/01 11:32:59 by yuhmatsu          #+#    #+#             */
+/*   Updated: 2023/05/13 17:04:11 by hyanagim         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Servers.hpp"
 #include "Webserv.hpp"
 #include "ClientRequest.hpp"
+#include "ServerResponse.hpp"
 
 int main(int argc, char **argv)
 {
@@ -41,5 +54,11 @@ int main(int argc, char **argv)
 
 	//for debug
 	clientrequest.PrintRequest();
+
+	ServerResponse res = ServerResponse(clientrequest);
+	cout << "--- response from server (START) ---" << endl;
+	cout << res.getResponse();
+	cout << "--- response from server (END)   ---" << endl;
+	
 	return (0);
 }
