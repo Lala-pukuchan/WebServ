@@ -62,10 +62,10 @@ void Webserv::run(void)
 							recvRequest(fd, &masterRecvFds, &masterSendFds, strage); //recvする
 					else if (FD_ISSET(fd, &sendFds))
 					{
-						ClientRequest request(strage[fd], findServerConfig(fd, strage[fd]));
+						// ClientRequest request(strage[fd], findServerConfig(fd, strage[fd])); //TODO:findServerConfig() 作る
 						strage[fd].erase();
-						ServerResponse res = ServerResponse(request);
-						sendResponse(fd, &masterRecvFds, &masterSendFds, res.getResponse());  //sendする
+						// ServerResponse res = ServerResponse(request);
+						// sendResponse(fd, &masterRecvFds, &masterSendFds, res.getResponse());  //sendする
 					}
 				}
 		}

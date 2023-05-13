@@ -21,7 +21,7 @@ class Webserv
 		void makeAcceptedFd(int fd, fd_set *masterRecvFds);
 		void recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, map<int ,string> &strage);
 		void sendResponse(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, string res);
-		ServerConfig findServerConfig(int fd, string& request);
+		// ServerConfig findServerConfig(int fd, string& request);
 
 		void printdebug();
 
