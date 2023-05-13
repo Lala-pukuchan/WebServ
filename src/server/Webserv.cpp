@@ -112,9 +112,13 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 
 	len = recv(fd, buffer, BUFSIZE, 0);
 	if (len == -1)
+	{
 		perror("recv");
+		return ;
+	}
+	buffer[len] = '\0';
 	strage[fd] += buffer;
-	if (strage[fd][BUFSIZE - 1] == 0) // end of file
+	if (len != BUFSIZE) // end of file
 	{
 		FD_CLR(fd, masterRecvFds);
 		FD_SET(fd, masterSendFds);
