@@ -46,7 +46,7 @@ class ServerResponse
 		ClientRequest _req;
 		string _res;
 		string _method;
-		string _file_absolute_path;
+		string _file_true_path;
 
 		// error check
 		bool methodCheck();

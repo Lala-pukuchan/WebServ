@@ -6,12 +6,13 @@
 /*   By: hyanagim <hyanagim@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 11:32:59 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/12 21:00:14 by hyanagim         ###   ########.fr       */
+/*   Updated: 2023/05/13 15:13:26 by hyanagim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Servers.hpp"
 #include "Webserv.hpp"
+#include "ClientRequest.hpp"
 
 int main(int argc, char **argv)
 {
@@ -35,5 +36,22 @@ int main(int argc, char **argv)
 	Webserv webserv(servers);
 	webserv.makeServerSocket();
 	webserv.run();
+
+
+	std::ifstream inputFile("ClientRequestSample.txt");
+	std::stringstream buffer;
+	buffer << inputFile.rdbuf();
+
+	std::string requestMessage = buffer.str();
+	//for debug
+	std::cout << requestMessage << std::endl;
+	std::cout << "-------------------------------------" << std::endl;
+
+
+	ServerConfig server = servers.getDefaultServer();
+	ClientRequest clientrequest(requestMessage, server);
+
+	//for debug
+	clientrequest.PrintRequest();
 	return (0);
 }

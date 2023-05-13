@@ -8,27 +8,43 @@
 #include <sstream>
 #include <map>
 #include <sys/stat.h>
+#include "ServerConfig.hpp"
 
 using namespace std;
 
-//class ClientRequest : public ServerConfig
 class ClientRequest
 {
 
 	private:
 		string _method;
 		string _contentLength;
+		// 見つからなかったらよしなに対応
 		string _file_absolute_path;
+
 		string _file_ext;
 		string _request_message_body;
-		string _path_info;
+		// 実行ファイルだった場合のみ、その後ろのパスを格納
+		string _cgi_path_info;
+		string _path;
+		string _version;
 
-		// 再定義せずに、ServerConfigを継承
+		// added by yuhmatsu
+		string _port;
+		string _server_name;
+		string _content_type;
+		bool _is_cgi;
+
 		vector<string> _allowedMethod;
 		int _maxBodySize;
 
-	public:
+		ServerConfig _server;
+
 		ClientRequest ();
+		void readClientRequest(std::string requestMessage);
+		void setPath();
+
+	public:
+		ClientRequest (string requestMessage, ServerConfig Server);
 		~ClientRequest ();
 
 		// getter
@@ -40,7 +56,10 @@ class ClientRequest
 		int getMaxBodySize() const;
 		string getRequestMessageBody() const;
 		string getPathInfo() const;
+		bool getIsCgi() const;
 
+		//for debug
+		void PrintRequest();
 };
 
 #endif

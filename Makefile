@@ -10,7 +10,7 @@ SERVERS := ServerSocket.cpp Webserv.cpp
 SERVERS := $(addprefix $(SERVERDIR)/, $(SERVERS))
 
 SRCDIR	:= src
-SRCS	:= main.cpp $(CONFIGS) $(SERVERS)
+SRCS	:= main.cpp ClientRequest.cpp $(CONFIGS) $(SERVERS)
 SORCES	:= $(addprefix $(SRCDIR)/, $(SRCS))
 
 OBJDIR	:= objs

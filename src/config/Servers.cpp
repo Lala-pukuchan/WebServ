@@ -3,21 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   Servers.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hyanagim <hyanagim@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:02:19 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/10 13:13:35 by hyanagim         ###   ########.fr       */
+/*   Updated: 2023/05/10 21:41:53 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Servers.hpp"
 
-Servers::Servers()
+Servers::Servers() : _defaultServerFlag(false)
 {
 }
 
 Servers::~Servers()
 {
+}
+
+ServerConfig Servers::getDefaultServer()
+{
+	return (this->_defaultServer);
 }
 
 void Servers::ReadConfig(string path)
@@ -63,6 +68,11 @@ void Servers::setServersConfig(void)
 			ServerConfig server;
 			server.setServerConfig(_configStrings, ++pos);
 			this->_servers[server.getPortString()].push_back(server);
+			if (_defaultServerFlag == false)
+			{
+				this->_defaultServer = server;
+				_defaultServerFlag = true;
+			}
 		}
 		else
 			throw ConfigContentError(pos, _configStrings[pos]);
