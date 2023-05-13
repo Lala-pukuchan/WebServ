@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:46:18 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/07 11:01:58 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/10 22:28:21 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,31 @@ ServerConfig::ServerConfig(void) : _port(""), _maxBodySize(1)
 
 ServerConfig::~ServerConfig(void)
 {
+}
+
+ServerConfig& ServerConfig::operator=(const ServerConfig& src)
+{
+	if (this != &src)
+	{
+		this->_serverName = src._serverName;
+		this->_port = src._port;
+		this->_allowedMethods = src._allowedMethods;
+		this->_maxBodySize = src._maxBodySize;
+		this->_errorPage = src._errorPage;
+		this->_locations = src._locations;
+		this->_indexes = src._indexes;
+		this->_autoindex = src._autoindex;
+		this->_return_redirect = src._return_redirect;
+		this->_upload_path = src._upload_path;
+		this->_cgi = src._cgi;
+		this->_cgi_extension = src._cgi_extension;
+	}
+	return (*this);
+}
+
+std::map<std::string, LocationConfig> ServerConfig::getLocationConfigs() const
+{
+	return (_locations);
 }
 
 void ServerConfig::setServerConfig(const std::vector<std::string> &configStrings, size_t &pos)
@@ -191,7 +216,7 @@ void ServerConfig::setAllowedMethods(const std::string &line, const size_t &pos)
 		throw EmptyValueError(pos, line);
 }
 
-std::string ServerConfig::getPortString(void)
+std::string ServerConfig::getPortString(void) const
 {
 	return (this->_port);
 }
@@ -228,3 +253,23 @@ void ServerConfig::PrintServerConfig()
 	for (std::map<int, std::string>::iterator it = this->_return_redirect.begin(); it != this->_return_redirect.end(); it++)
 		std::cout << "  " << it->first << ": " << it->second << std::endl;
 }
+
+std::string ServerConfig::getServerName() const { return (this->_serverName); }
+
+std::vector<std::string> ServerConfig::getAllowedMethods() const { return (this->_allowedMethods); }
+
+int ServerConfig::getMaxBodySize() const { return (this->_maxBodySize); }
+
+std::vector<std::string> ServerConfig::getIndexes() const { return (this->_indexes); }
+
+std::map<int, std::string> ServerConfig::getErrorPage() const { return (this->_errorPage); }
+
+std::map<int, std::string> ServerConfig::getReturnRedirect() const { return (this->_return_redirect); }
+
+std::string ServerConfig::getUploadPath() const { return (this->_upload_path); }
+
+std::string ServerConfig::getAutoindex() const { return (this->_autoindex); }
+
+bool ServerConfig::getCgi() const { return (this->_cgi); }
+
+std::vector<std::string> ServerConfig::getCgiExtension() const { return (this->_cgi_extension); }

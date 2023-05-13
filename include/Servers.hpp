@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Servers.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hyanagim <hyanagim@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:51:31 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/10 13:12:05 by hyanagim         ###   ########.fr       */
+/*   Updated: 2023/05/10 21:41:33 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ class Servers
 {
 	private:
 		map<string, vector<ServerConfig> > _servers;
+		bool _defaultServerFlag;
 		ServerConfig _defaultServer;
 		vector<string> _configStrings;
 
@@ -37,6 +38,7 @@ class Servers
 		void setServersConfig(void);
 
 		map<string, vector<ServerConfig> >& getServers();
+		ServerConfig getDefaultServer();
 
 		//for debug
 		void PrintConfigFile();
