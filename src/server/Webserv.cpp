@@ -91,21 +91,18 @@ void Webserv::makeAcceptedFd(int fd, fd_set *masterRecvFds)
 {
 	int acceptedFd;
 
-	while (true)
+	acceptedFd = accept(fd, NULL, NULL);
+	if (acceptedFd == -1)
 	{
-		acceptedFd = accept(fd, NULL, NULL);
-		if (acceptedFd == -1)
-		{
-		 	if (errno != EWOULDBLOCK) //ノンブロッキングでacceptedFdが-1になっているときは，エラーにならない
-				perror("accept");
-			return ;
-		}
-		_acceptedSockets[acceptedFd] = _sockets[fd];
-		fcntl(acceptedFd, F_SETFL, O_NONBLOCK);
-		FD_SET(acceptedFd, masterRecvFds);
-		if (_maxFd < acceptedFd)
-			_maxFd = acceptedFd;
+	 	if (errno != EWOULDBLOCK) //ノンブロッキングでacceptedFdが-1になっているときは，エラーにならない
+			perror("accept");
+		return ;
 	}
+	// _acceptedSockets[acceptedFd] = _sockets[fd];
+	fcntl(acceptedFd, F_SETFL, O_NONBLOCK);
+	FD_SET(acceptedFd, masterRecvFds);
+	if (_maxFd < acceptedFd)
+		_maxFd = acceptedFd;
 }
 
 void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, map<int ,string> &strage)
@@ -113,7 +110,6 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 	char buffer[BUFSIZE + 1];
 	int len;
 
-	memset(buffer, 0, BUFSIZE + 1);
 	len = recv(fd, buffer, BUFSIZE, 0);
 	if (len == -1)
 		perror("recv");
