@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 14:14:53 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/10 22:30:47 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/13 18:49:17 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,23 @@
 # include <string>
 # include <vector>
 # include <map>
+# include "ServerConfig.hpp"
+
+class ServerConfig;
 
 class LocationConfig
 {
 	private:
 		std::string _alias;
-		std::string _autoindex;
+		std::string _cgi_path;
+	
+		std::vector<std::string> _allowedMethods;
+		int _maxBodySize; //受け取るリクエストのサイズ上限。単位はメガバイトにします。不都合があれば教えてください（yuhmatsu）
+		std::map<int, std::string> _errorPage;
+		std::vector<std::string> _indexes;
+		bool _autoindex;
 		std::string _upload_path;
 		std::vector<std::string> _cgi_extension;
-		std::vector<std::string> _indexes;
-		std::map<int, std::string> _errorPage;
 		std::map<int, std::string> _return_redirect;
 
 		void setCgiExtension(const std::string &line, const size_t &pos);
@@ -34,11 +41,13 @@ class LocationConfig
 		std::string getOneValue(const std::string &line, size_t &pos);
 	public:
 		LocationConfig(void);
+		LocationConfig(const ServerConfig &server_config);
 		~LocationConfig(void);
 		
-		void setLocationConfig(const std::vector<std::string> &configStrings, size_t &pos);
+		void setLocationConfig(const std::vector<std::string> &configStrings, size_t &pos, const std::string &locationName);
+		void setAllowedMethods(const std::string &line, const size_t &pos);
 		std::string getAlias() const;
-		std::string getAutoindex() const;
+		bool getAutoindex() const;
 		std::string getUploadPath() const;
 		std::vector<std::string> getCgiExtension() const;
 		std::vector<std::string> getIndexes() const;

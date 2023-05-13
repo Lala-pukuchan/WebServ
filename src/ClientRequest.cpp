@@ -64,6 +64,8 @@ void ClientRequest::setPath()
 	for (std::map<std::string, LocationConfig>::iterator it = locations.begin(); it != locations.end(); it++)
 	{
 		std::string location_path = it->first;
+		if (location_path[0] == '*')
+			continue ;
 		if (_path.find(location_path) == 0 && location_path.length() > LongestMatch)
 		{
 			LongestMatch = location_path.length();

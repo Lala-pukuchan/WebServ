@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:13:34 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/10 22:32:10 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/13 18:56:03 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,16 @@ LocationConfig::LocationConfig(void)
 {
 }
 
+LocationConfig::LocationConfig(const ServerConfig &serverConfig) : _allowedMethods(serverConfig.getAllowedMethods()), _maxBodySize(serverConfig.getMaxBodySize()), _errorPage(serverConfig.getErrorPage()), _indexes(serverConfig.getIndexes()), _autoindex(serverConfig.getAutoindex()), _upload_path(serverConfig.getUploadPath()), _cgi_extension(serverConfig.getCgiExtension()), _return_redirect(serverConfig.getReturnRedirect())
+{
+}
+
 LocationConfig::~LocationConfig(void)
 {
 }
 
 
-void LocationConfig::setLocationConfig(const std::vector<std::string> &configStrings, size_t &pos)
+void LocationConfig::setLocationConfig(const std::vector<std::string> &configStrings, size_t &pos, const std::string &locationName)
 {
 	std::string		line;
 
@@ -47,20 +51,33 @@ void LocationConfig::setLocationConfig(const std::vector<std::string> &configStr
 			getIntValue(line);
 		else if (key == "alias")
 			this->_alias = getOneValue(line, pos);
+		else if (key == "allow_methods")
+			setAllowedMethods(line, pos);
 		else if (key == "autoindex")
-			this->_autoindex = getOneValue(line, pos);
+		{
+			string autoindex = getOneValue(line, pos);
+			if (autoindex == "on")
+				this->_autoindex = true;
+			else if (autoindex == "off")
+				this->_autoindex = false;
+			else
+				throw ConfigContentError(pos, line);
+		}
+		else if (key == "client_max_body_size")
+			this->_maxBodySize = std::stoi(getOneValue(line, pos));
 		else if (key == "upload_path")
 			this->_upload_path = getOneValue(line, pos);
 		else if (key == "cgi_extension")
 			setCgiExtension(line, pos);
+		else if (key == "cgi_path")
+			this->_cgi_path = getOneValue(line, pos);
 		else if (key == "index")
 			setIndex(line, pos);
 		else
 			throw InvalidKeyError(pos, line);
 	}
-	if (this->_alias.empty())
-		throw EmptyAliasError();
-	
+	if (locationName[0] != '*' && this->_alias.empty())
+		this->_alias = locationName;
 }
 
 std::string LocationConfig::getOneValue(const std::string &line, size_t &pos)
@@ -78,6 +95,34 @@ std::string LocationConfig::getOneValue(const std::string &line, size_t &pos)
 	if (value.find(';') != std::string::npos)
 		value = value.substr(0, value.find(';'));
 	return (value);
+}
+
+void LocationConfig::setAllowedMethods(const std::string &line, const size_t &pos)
+{
+	std::string key;
+	std::istringstream iss(line);
+
+	iss >> key;
+	while(1)
+	{
+		std::string value;
+		iss >> value;
+		if (value.empty())
+			throw SemicolonError(pos, line);
+		if (value.find(';') == 0)
+			break;
+		if (value.find(';') != std::string::npos)
+		{
+			value = value.substr(0, value.find(';'));
+			if (value != "GET" && value != "POST" && value != "DELETE" && value != "PUT")
+				throw InvalidMethodError(pos, line);
+			_allowedMethods.push_back(value);
+			break;
+		}
+		_allowedMethods.push_back(value);
+	}
+	if (_allowedMethods.empty())
+		throw EmptyValueError(pos, line);
 }
 
 void LocationConfig::getIntValue(const std::string &line)
@@ -180,7 +225,7 @@ void LocationConfig::PrintLocationConfig()
 
 std::string LocationConfig::getAlias() const { return (this->_alias); }
 
-std::string LocationConfig::getAutoindex() const { return (this->_autoindex); }
+bool LocationConfig::getAutoindex() const { return (this->_autoindex); }
 
 std::string LocationConfig::getUploadPath() const { return (this->_upload_path); }
 

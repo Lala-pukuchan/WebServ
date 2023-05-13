@@ -39,7 +39,7 @@ class ClientRequest
 
 		ServerConfig _server;
 
-		ClientRequest ();
+		ClientRequest();
 		void readClientRequest(std::string requestMessage);
 		void setPath();
 

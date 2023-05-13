@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/01 11:32:59 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/10 22:02:15 by yuhmatsu         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Servers.hpp"
 #include "Webserv.hpp"
 #include "ClientRequest.hpp"
@@ -18,14 +6,17 @@ int main(int argc, char **argv)
 {
 	Servers servers;
 
-	if (argc != 2)
+	if (argc > 2)
 	{
 		std::cout << "usage: ./webserv [config_file]" << std::endl;
 		return (1);
 	}
-	servers.ReadConfig(argv[1]);
 	try
 	{
+		if (argc == 1)
+			servers.ReadConfig("conf/default.conf");
+		else
+			servers.ReadConfig(argv[1]);
 		servers.setServersConfig();
 		servers.PrintServersConfig();
 	}
