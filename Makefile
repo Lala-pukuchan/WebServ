@@ -9,8 +9,16 @@ SERVERDIR := server
 SERVERS := ServerSocket.cpp Webserv.cpp
 SERVERS := $(addprefix $(SERVERDIR)/, $(SERVERS))
 
+REQUESTDIR := request
+REQUESTS := ClientRequest.cpp
+REQUESTS := $(addprefix $(REQUESTDIR)/, $(REQUESTS))
+
+RESPONSEDIR := response
+RESPONSES := ServerResponse.cpp CgiExe.cpp
+RESPONSES := $(addprefix $(RESPONSEDIR)/, $(RESPONSES))
+
 SRCDIR	:= src
-SRCS	:= main.cpp ClientRequest.cpp $(CONFIGS) $(SERVERS)
+SRCS	:= main.cpp $(CONFIGS) $(SERVERS) $(REQUESTS) $(RESPONSES)
 SORCES	:= $(addprefix $(SRCDIR)/, $(SRCS))
 
 OBJDIR	:= objs

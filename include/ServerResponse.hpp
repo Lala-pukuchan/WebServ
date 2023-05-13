@@ -65,11 +65,8 @@ class ServerResponse
 
 		// http method
 		void Get();
-		void Head();
 		void Post();
-		void Put();
 		void Delete();
-		void Options();
 
 	public:
 		// const & dest

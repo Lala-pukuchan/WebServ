@@ -28,8 +28,7 @@ void ServerResponse::setRes(string status_code, string response_message_body, st
 		res_content_length = "Content-Length: " + to_string(response_message_body.size()) + "\r\n";
 	if (!content_type.empty())
 		res_content_type = "Content-Type: " + content_type + "\r\n";
-	if (_method != "HEAD")
-		res_response_message_body = response_message_body;
+	res_response_message_body = response_message_body;
 	if (_method == "OPTIONS")
 	{
 		res_allow = "Allow: ";
@@ -99,11 +98,6 @@ void ServerResponse::Get(){
 		getFileContents();
 }
 
-void ServerResponse::Head(){
-	// get file, but not return contents
-	getFileContents();
-}
-
 void ServerResponse::Post(){
 
 	// cgi / upload file
@@ -115,27 +109,23 @@ void ServerResponse::Post(){
 			_res = cgi.getResult();
 		else
 			setRes(status, "", "");
-	} else
-		setRes("200", "POST success", "text/plain");
-}
-
-void ServerResponse::Put(){
-
-	// create / update file
-	bool exist = false;
-	ifstream ifs(_file_true_path);
-	if ((exist = existFile()) && !ifs.is_open()){
-		setRes("403", "", "");
 	} else {
-		ofstream ofs(_file_true_path, ios::trunc);
-		ofs << _req.getRequestMessageBody();
-		if (!exist)
-			setRes("201", "", "");
-		else
-			setRes("204", "", "");
-		ofs.close();
+		// create / update file
+		bool exist = false;
+		ifstream ifs(_file_true_path);
+		if ((exist = existFile()) && !ifs.is_open()){
+			setRes("403", "", "");
+		} else {
+			ofstream ofs(_file_true_path, ios::trunc);
+			ofs << _req.getRequestMessageBody();
+			if (!exist)
+				setRes("201", "create file success", "text/plain");
+			else
+				setRes("204", "update file success", "text/plain");
+			ofs.close();
+		}
+		ifs.close();
 	}
-	ifs.close();
 }
 
 void ServerResponse::Delete(){
@@ -158,11 +148,6 @@ void ServerResponse::Delete(){
 	ifs.close();
 }
 
-void ServerResponse::Options(){
-	// return allow methods
-	setRes("200", "", "");
-}
-
 ServerResponse::ServerResponse (ClientRequest &req) : 
 	_req(req), _res(""), _method(_req.getMethod()), _file_true_path(_req.getFileAbsolutePath()){
 
@@ -177,13 +162,9 @@ ServerResponse::ServerResponse (ClientRequest &req) :
 	}
 
 	// methods
-	string methods[6] = { "GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS" };
-	void (ServerResponse::*funcs[6])()
-		= { &ServerResponse::Get, &ServerResponse::Head, &ServerResponse::Post, &ServerResponse::Put, 
-			&ServerResponse::Delete, &ServerResponse::Options };
-
-	// exe method func
-	for (int i = 0; i < 6; i++){
+	string methods[3] = { "GET", "POST", "DELETE" };
+	void (ServerResponse::*funcs[3])() = { &ServerResponse::Get, &ServerResponse::Post, &ServerResponse::Delete };
+	for (int i = 0; i < 3; i++){
 		if (_method == methods[i])
 		{
 			(this->*funcs[i])();
@@ -196,15 +177,15 @@ ServerResponse::~ServerResponse (){}
 
 string ServerResponse::getResponse () const { return (_res); }
 
-int main(void)
-{
-	ClientRequest req;
-	ServerResponse res = ServerResponse(req);
-	cout << "--- response from server (START) ---" << endl;
-	cout << res.getResponse();
-	cout << "--- response from server (END)   ---" << endl;
-	return (0);
-}
+// int main(void)
+// {
+// 	ClientRequest req;
+// 	ServerResponse res = ServerResponse(req);
+// 	cout << "--- response from server (START) ---" << endl;
+// 	cout << res.getResponse();
+// 	cout << "--- response from server (END)   ---" << endl;
+// 	return (0);
+// }
 
 //__attribute__((destructor))
 //static void destructor() {
