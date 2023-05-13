@@ -56,7 +56,7 @@ void Webserv::run(void)
 				for (int fd = 0; fd < _maxFd + 1; fd++)
 				{
 					if (FD_ISSET(fd, &recvFds))
-						if (matchListenFd(fd)) // 接続が確立されるsocketsの方に含まれるなら，
+						if (_sockets.find(fd) != _sockets.end()) // 接続が確立されるsocketsの方に含まれるなら，
 							makeAcceptedFd(fd, &masterRecvFds); //acceptする
 						else
 							recvRequest(fd, &masterRecvFds, &masterSendFds, strage); //recvする
@@ -79,31 +79,26 @@ void Webserv::setFds(fd_set *masterRecvFds)
 	for (; it != _sockets.end(); it++)
 	{
 		FD_SET(it->first, masterRecvFds);
+		#ifdef DEBUG
 		cout << "port is " << it->first << endl;
+		#endif
 	}
-}
-
-bool Webserv::matchListenFd(int fd)
-{
-	if (_sockets.find(fd) == _sockets.end())
-		return false;
-	return true;
 }
 
 void Webserv::makeAcceptedFd(int fd, fd_set *masterRecvFds)
 {
 	int acceptedFd;
-
+	
 	while (true)
 	{
 		acceptedFd = accept(fd, NULL, NULL);
-		fcntl(acceptedFd, F_SETFL, O_NONBLOCK);
 		if (acceptedFd == -1)
 		{
 		 	if (errno != EWOULDBLOCK) //ノンブロッキングでacceptedFdが-1になっているときは，エラーにならない
 				perror("accept");
 			return ;
 		}
+		fcntl(acceptedFd, F_SETFL, O_NONBLOCK);
 		FD_SET(acceptedFd, masterRecvFds);
 		if (_maxFd < acceptedFd)
 			_maxFd = acceptedFd;
@@ -120,12 +115,13 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 	if (len == -1)
 		perror("recv");
 	strage[fd] += buffer;
-	cout << "len is " << len << endl;
 	if (strage[fd][BUFSIZE - 1] == 0) // end of file
 	{
 		FD_CLR(fd, masterRecvFds);
 		FD_SET(fd, masterSendFds);
+		#ifdef DEBUG
 		cout << "buffer is " << strage[fd] << endl;
+		#endif
 	}
 }
 
@@ -136,6 +132,7 @@ void Webserv::sendResponse(int fd, fd_set *masterRecvFds, fd_set *masterSendFds,
 	len = send(fd, strage[fd].c_str(), strage[fd].size(), 0);
 	if (len == -1)
 		perror("send");
+	strage[fd].erase();
 	FD_CLR(fd, masterSendFds);
 	close(fd);
 	(void) masterRecvFds;
@@ -158,3 +155,10 @@ void Webserv::printdebug()
 #else
 void Webserv::printdebug() {}
 #endif
+
+// bool Webserv::matchListenFd(int fd)
+// {
+// 	if (_sockets.find(fd) == _sockets.end())
+// 		return false;
+// 	return true;
+// }
