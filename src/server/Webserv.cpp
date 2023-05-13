@@ -62,7 +62,10 @@ void Webserv::run(void)
 							recvRequest(fd, &masterRecvFds, &masterSendFds, strage); //recvする
 					else if (FD_ISSET(fd, &sendFds))
 					{
-						sendResponse(fd, &masterRecvFds, &masterSendFds, strage);  //sendする
+						ClientRequest request(strage[fd], findServerConfig(fd, strage[fd]));
+						strage[fd].erase();
+						ServerResponse res = ServerResponse(request);
+						sendResponse(fd, &masterRecvFds, &masterSendFds, res.getResponse());  //sendする
 					}
 				}
 		}
@@ -128,18 +131,26 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 	}
 }
 
-void Webserv::sendResponse(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, map<int, string> &strage)
+void Webserv::sendResponse(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, string res)
 {
 	int len;
 
-	len = send(fd, strage[fd].c_str(), strage[fd].size(), 0);
+	len = send(fd, res.c_str(), res.size(), 0);
 	if (len == -1)
 		perror("send");
-	strage[fd].erase();
 	FD_CLR(fd, masterSendFds);
 	close(fd);
 	(void) masterRecvFds;
 }
+
+// ServerConfig Webserv::findServerConfig(int fd, string& request)
+// {
+// 	for (int i = 0; i < _acceptedSockets[fd].size(); i++)
+// 	{
+// 		if (_acceptedSockets[fd][i].getServerName() == )
+// 	}
+// }
+
 
 #ifdef DEBUG
 void Webserv::printdebug()

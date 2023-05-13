@@ -4,6 +4,8 @@
 # include "ServerConfig.hpp"
 # include "Servers.hpp"
 # include "ServerSocket.hpp"
+# include "ClientRequest.hpp"
+# include "ServerResponse.hpp"
 using namespace std;
 
 class Webserv
@@ -18,7 +20,8 @@ class Webserv
 		void setFds(fd_set *masterRecvFds);
 		void makeAcceptedFd(int fd, fd_set *masterRecvFds);
 		void recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, map<int ,string> &strage);
-		void sendResponse(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, map<int, string> &strage);
+		void sendResponse(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, string res);
+		ServerConfig findServerConfig(int fd, string& request);
 
 		void printdebug();
 
