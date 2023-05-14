@@ -23,6 +23,7 @@ int main(int argc, char **argv)
 		std::cerr << e.what() << '\n';
 	}
 	Webserv webserv(servers);
+	signal(SIGPIPE, SIG_IGN);
 	webserv.makeServerSocket();
 	webserv.run();
 
