@@ -87,14 +87,51 @@ bool ServerResponse::existFile(){
 	return (!stat(_file_true_path.c_str(), &buffer));
 }
 
+bool ServerResponse::getDir(){
+
+	bool isDir = false;
+	string bk = _file_true_path;
+
+	if (_file_ext.empty()){
+		if (_file_true_path.at(_file_true_path.size() - 1) != '/')
+			_file_true_path += "/";
+		_file_true_path += DEFAULT_INDEX_PAGE;
+		if (existFile())
+			_file_ext = ".html";
+		else
+		{
+			isDir = true;
+			if (_conf.getAutoindex() == "on"){
+				DIR* dir;
+				struct dirent* entry;
+				char* dirPath = new char[bk.length() + 1];
+    			strcpy(dirPath, bk.c_str());
+				dir = opendir(dirPath);
+				if (!dir) {
+					setResponse("404", "", "");
+					return (isDir);
+				}
+				string content;
+				while ((entry = readdir(dir))) {
+					if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, ".."))
+					{
+						if (!content.empty())
+							content += ",";
+						content += entry->d_name;
+					}
+				}
+				content += "\n";
+				setResponse("200", content, "text/plain");
+				closedir(dir);
+			} else
+				setResponse("403", "", "");
+		}
+	}
+	return (isDir);
+}
+
 void ServerResponse::getFile(){
 	ifstream ifs(_file_true_path);
-	//if (isDir())
-	//{
-	//	cout << "path is directory: " << path << endl;
-	//  directoryListing();
-	//}
-	//else 
 	if (!ifs.is_open())
 		setResponse("404", "", "");
 	else
@@ -103,7 +140,7 @@ void ServerResponse::getFile(){
 		string line;
 		while (getline(ifs, line))
 			content += line;
-		setResponse("200", content, mime_mapper.at(_req.getFileExt()));
+		setResponse("200", content, mime_mapper.at(_file_ext));
 	}
 	ifs.close();
 }
@@ -148,7 +185,10 @@ void ServerResponse::Get(){
 	if (_req.getIsCgi())
 		getCgiResults();
 	else
-		getFile();
+	{
+		if (!getDir())
+			getFile();
+	}
 }
 
 void ServerResponse::Post(){
@@ -164,7 +204,7 @@ void ServerResponse::Delete(){ deleteFile(); }
 
 /* constructor / destructor */
 ServerResponse::ServerResponse (ClientRequest &req) : 
-	_req(req), _res(""), _method(_req.getMethod()), _file_true_path(_req.getFileAbsolutePath()){
+	_req(req), _conf(req.getServerConfig()), _res(""), _method(req.getMethod()), _file_true_path(req.getFileAbsolutePath()), _file_ext(req.getFileExt()){
 
 	if (checkClientRequest())
 		return ;

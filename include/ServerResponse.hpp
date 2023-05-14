@@ -2,6 +2,9 @@
 #define SERVER_RES_H
 
 #include "ClientRequest.hpp"
+#include <dirent.h>
+
+# define DEFAULT_INDEX_PAGE "index.html"
 
 /* setting */
 // mime-type
@@ -44,9 +47,11 @@ class ServerResponse
 
 	private:
 		ClientRequest _req;
+		ServerConfig _conf;
 		string _res;
 		string _method;
 		string _file_true_path;
+		string _file_ext;
 
 		/* response getter / setter */
 		void setResponse(string status_code, string response_message_body, string content_type);
@@ -61,6 +66,7 @@ class ServerResponse
 
 		/* File Handler */
 		bool existFile();
+		bool getDir();
 		void getFile();
 		void setFile();
 		void deleteFile();
