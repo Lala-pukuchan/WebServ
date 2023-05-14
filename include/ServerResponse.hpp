@@ -3,6 +3,7 @@
 
 #include "ClientRequest.hpp"
 
+/* setting */
 // mime-type
 typedef pair<string, string> stringpair_t;
 const stringpair_t mime[] = {
@@ -24,7 +25,7 @@ const stringpair_t mime[] = {
 const int mime_size = sizeof(mime) / sizeof(mime[0]);
 extern map <string, string> mime_mapper;
 
-// response status
+// status
 const stringpair_t status[] = {
   stringpair_t("200", "OK"),
   stringpair_t("201", "Created"),
@@ -42,38 +43,40 @@ class ServerResponse
 {
 
 	private:
-		// req & res
 		ClientRequest _req;
 		string _res;
 		string _method;
 		string _file_true_path;
 
-		// error check
-		bool methodCheck();
-		bool contentLengthCheck();
+		/* response getter / setter */
+		void setResponse(string status_code, string response_message_body, string content_type);
 
-		// create res
-		void setRes(string status_code, string response_message_body, string content_type);
+		/* request checker */
+		bool checkMethod();
+		bool checkContentLength();
+		bool checkClientRequest();
 
-		// cgi
-		bool isCgi();
+		/* cgi */
+		void getCgiResults();
 
-		// handle file
+		/* File Handler */
 		bool existFile();
-		void getFileContents();
-		void updateFileContents();
+		void getFile();
+		void setFile();
+		void deleteFile();
 
-		// http method
+		/* HTTP Method */
 		void Get();
 		void Post();
+		void Put();
 		void Delete();
 
 	public:
-		// const & dest
+		/* constructor / destructor */
 		ServerResponse (ClientRequest &req);
 		~ServerResponse ();
 
-		// getter
+		/* response getter / setter */
 		string getResponse () const;
 
 };

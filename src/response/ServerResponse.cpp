@@ -2,20 +2,14 @@
 #include "ServerResponse.hpp"
 #include "CgiExe.hpp"
 
+/* setting */
 map<string, string> mime_mapper (mime, mime + mime_size);
 map<string, string> status_mapper (status, status + status_size);
 
-bool ServerResponse::methodCheck() {
-    for (int i = 0; i < static_cast<int>(_req.getAllowedMethod().size()); i++) {
-		if (_method == _req.getAllowedMethod()[i])
-			return (false);
-    }
-	return (true);
-}
+/* response getter / setter */
+string ServerResponse::getResponse () const { return (_res); }
 
-bool ServerResponse::contentLengthCheck(){ return (stoi(_req.getContentLength()) > _req.getMaxBodySize()); }
-
-void ServerResponse::setRes(string status_code, string response_message_body, string content_type){
+void ServerResponse::setResponse(string status_code, string response_message_body, string content_type){
 
 	// init
 	string res_content_length = "";
@@ -29,16 +23,17 @@ void ServerResponse::setRes(string status_code, string response_message_body, st
 	if (!content_type.empty())
 		res_content_type = "Content-Type: " + content_type + "\r\n";
 	res_response_message_body = response_message_body;
-	if (_method == "OPTIONS")
-	{
-		res_allow = "Allow: ";
-		for (int i = 0; i < static_cast<int>(_req.getAllowedMethod().size()); i++){
-			if (i != 0)
-				res_allow += ",";
-			res_allow += _req.getAllowedMethod()[i];
-    	}
-		res_allow += "\r\n";
-	}
+	//if (_method == "OPTIONS")
+	//{
+	//	res_allow = "Allow: ";
+	//	for (int i = 0; i < static_cast<int>(_req.getAllowedMethod().size()); i++){
+	//		if (i != 0)
+	//			res_allow += ",";
+	//		res_allow += _req.getAllowedMethod()[i];
+    //	}
+	//	res_allow += "\r\n";
+	//}
+
 	// create res
 	ostringstream os;
 	os << 
@@ -52,18 +47,47 @@ void ServerResponse::setRes(string status_code, string response_message_body, st
 	_res = os.str();
 }
 
-bool ServerResponse::isCgi(){
-	// check whether cgi or not
+/* request checker */
+bool ServerResponse::checkMethod() {
+    for (int i = 0; i < static_cast<int>(_req.getAllowedMethod().size()); i++) {
+		if (_method == _req.getAllowedMethod()[i])
+			return (false);
+    }
 	return (true);
-	// return (false);
 }
 
+bool ServerResponse::checkContentLength(){ return (stoi(_req.getContentLength()) > _req.getMaxBodySize()); }
+
+bool ServerResponse::checkClientRequest() {
+	bool m = false;
+	if ((m = checkMethod()) || (checkContentLength())){
+		if (m)
+			setResponse("405", "", "");
+		else
+			setResponse("413", "", "");
+		return (true);
+	}
+	return (false);
+}
+
+/* cgi */
+void ServerResponse::getCgiResults(){
+	CgiExe cgi(_req);
+	cgi.exe();
+	string cgiStatus;
+	if ((cgiStatus = cgi.getStatus()) == "200")
+		_res = cgi.getResult();
+	else
+		setResponse(cgiStatus, "", "");
+}
+
+/* File Handler */
 bool ServerResponse::existFile(){
 	struct stat buffer;
 	return (!stat(_file_true_path.c_str(), &buffer));
 }
 
-void ServerResponse::getFileContents(){
+void ServerResponse::getFile(){
 	ifstream ifs(_file_true_path);
 	//if (isDir())
 	//{
@@ -72,99 +96,82 @@ void ServerResponse::getFileContents(){
 	//}
 	//else 
 	if (!ifs.is_open())
-		setRes("404", "", "");
+		setResponse("404", "", "");
 	else
 	{
 		string content;
 		string line;
 		while (getline(ifs, line))
 			content += line;
-		setRes("200", content, mime_mapper.at(_req.getFileExt()));
+		setResponse("200", content, mime_mapper.at(_req.getFileExt()));
 	}
 	ifs.close();
 }
 
-void ServerResponse::Get(){
-	// cgi / get file
-	if (isCgi()){
-		CgiExe cgi(_req);
-		cgi.exe();
-		string status;
-		if ((status = cgi.getStatus()) == "200")
-			_res = cgi.getResult();
-		else
-			setRes(status, "", "");
-	} else
-		getFileContents();
-}
-
-void ServerResponse::Post(){
-
-	// cgi / upload file
-	if (isCgi()){
-		CgiExe cgi(_req);
-		cgi.exe();
-		string status;
-		if ((status = cgi.getStatus()) == "200")
-			_res = cgi.getResult();
-		else
-			setRes(status, "", "");
+void ServerResponse::setFile(){
+	bool exist = false;
+	ifstream ifs(_file_true_path);
+	if ((exist = existFile()) && !ifs.is_open()){
+		setResponse("403", "", "");
 	} else {
-		// create / update file
-		bool exist = false;
-		ifstream ifs(_file_true_path);
-		if ((exist = existFile()) && !ifs.is_open()){
-			setRes("403", "", "");
-		} else {
-			ofstream ofs(_file_true_path, ios::trunc);
-			ofs << _req.getRequestMessageBody();
-			if (!exist)
-				setRes("201", "create file success", "text/plain");
-			else
-				setRes("204", "update file success", "text/plain");
-			ofs.close();
-		}
-		ifs.close();
+		ofstream ofs(_file_true_path, ios::trunc);
+		ofs << _req.getRequestMessageBody();
+		if (!exist)
+			setResponse("201", "create file success", "text/plain");
+		else
+			setResponse("204", "update file success", "text/plain");
+		ofs.close();
 	}
+	ifs.close();
 }
 
-void ServerResponse::Delete(){
-
-	// delte file
+void ServerResponse::deleteFile(){
 	ifstream ifs(_file_true_path);
 	if (!existFile()){
-		setRes("404", "", "");
+		setResponse("404", "", "");
 	} else {
 		try {
 			if (!remove(_file_true_path.c_str()))
-				setRes("200", "", "");
+				setResponse("200", "", "");
 			else
-				setRes("403", "", "");
+				setResponse("403", "", "");
 		} catch (const exception& e) {
 			cout << e.what() << endl;
-			setRes("500", "", "");
+			setResponse("500", "", "");
 		}
 	}
 	ifs.close();
 }
 
+/* HTTP Method */
+void ServerResponse::Get(){
+	if (_req.getIsCgi())
+		getCgiResults();
+	else
+		getFile();
+}
+
+void ServerResponse::Post(){
+	if (_req.getIsCgi())
+		getCgiResults();
+	else
+		setFile();
+}
+
+void ServerResponse::Put(){ setFile(); }
+
+void ServerResponse::Delete(){ deleteFile(); }
+
+/* constructor / destructor */
 ServerResponse::ServerResponse (ClientRequest &req) : 
 	_req(req), _res(""), _method(_req.getMethod()), _file_true_path(_req.getFileAbsolutePath()){
 
-	// method / content length error
-	bool m = false;
-	if ((m = methodCheck()) || (contentLengthCheck())){
-		if (m)
-			setRes("405", "", "");
-		else
-			setRes("413", "", "");
+	if (checkClientRequest())
 		return ;
-	}
 
-	// methods
-	string methods[3] = { "GET", "POST", "DELETE" };
-	void (ServerResponse::*funcs[3])() = { &ServerResponse::Get, &ServerResponse::Post, &ServerResponse::Delete };
-	for (int i = 0; i < 3; i++){
+	string methods[4] = { "GET", "POST", "PUT", "DELETE" };
+	void (ServerResponse::*funcs[4])() = { &ServerResponse::Get, &ServerResponse::Post, &ServerResponse::Put, &ServerResponse::Delete };
+	for (int i = 0; i < 4; i++){
 		if (_method == methods[i])
 		{
 			(this->*funcs[i])();
@@ -174,20 +181,3 @@ ServerResponse::ServerResponse (ClientRequest &req) :
 }
 
 ServerResponse::~ServerResponse (){}
-
-string ServerResponse::getResponse () const { return (_res); }
-
-// int main(void)
-// {
-// 	ClientRequest req;
-// 	ServerResponse res = ServerResponse(req);
-// 	cout << "--- response from server (START) ---" << endl;
-// 	cout << res.getResponse();
-// 	cout << "--- response from server (END)   ---" << endl;
-// 	return (0);
-// }
-
-//__attribute__((destructor))
-//static void destructor() {
-//	system("leaks -q a.out");
-//}
