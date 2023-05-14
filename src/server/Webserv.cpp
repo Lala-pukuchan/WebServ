@@ -62,10 +62,11 @@ void Webserv::run(void)
 							recvRequest(fd, &masterRecvFds, &masterSendFds, strage); //recvする
 					else if (FD_ISSET(fd, &sendFds))
 					{
-						// ClientRequest request(strage[fd], findServerConfig(fd, strage[fd])); //TODO:findServerConfig() 作る
+						ClientRequest request(strage[fd], findServerConfig(fd, strage[fd])); //TODO:findServerConfig() 作る
 						strage[fd].erase();
-						// ServerResponse res = ServerResponse(request);
-						// sendResponse(fd, &masterRecvFds, &masterSendFds, res.getResponse());  //sendする
+						ServerResponse res = ServerResponse(request);
+						sendResponse(fd, &masterRecvFds, &masterSendFds, res.getResponse());  //sendする
+						// sendResponse(fd, &masterRecvFds, &masterSendFds, "HTTP/1.1 200 OK\r\n\r\n");
 					}
 				}
 		}
@@ -101,7 +102,7 @@ void Webserv::makeAcceptedFd(int fd, fd_set *masterRecvFds)
 			perror("accept");
 		return ;
 	}
-	// _acceptedSockets[acceptedFd] = _sockets[fd];
+	_acceptedSockets[acceptedFd] = _sockets[fd];
 	fcntl(acceptedFd, F_SETFL, O_NONBLOCK);
 	FD_SET(acceptedFd, masterRecvFds);
 	if (_maxFd < acceptedFd)
@@ -143,13 +144,35 @@ void Webserv::sendResponse(int fd, fd_set *masterRecvFds, fd_set *masterSendFds,
 	(void) masterRecvFds;
 }
 
-// ServerConfig Webserv::findServerConfig(int fd, string& request)
-// {
-// 	for (int i = 0; i < _acceptedSockets[fd].size(); i++)
-// 	{
-// 		if (_acceptedSockets[fd][i].getServerName() == )
-// 	}
-// }
+string Webserv::getServerName(string& request)
+{
+	std::istringstream iss(request);
+	string line;
+	string tmp;
+	string value;
+	string serverName;
+
+	getline(iss, line);
+	getline(iss, line);
+	std::istringstream iss_second_line(line);
+	iss_second_line >> tmp >> value;
+	serverName = value.substr(0, value.find(":"));
+	return serverName;
+}
+
+
+ServerConfig Webserv::findServerConfig(int fd, string& request)
+{
+	for (unsigned long i = 0; i < _acceptedSockets[fd].size(); i++)
+	{
+		#ifdef DEBUG
+			cout << _acceptedSockets[fd][i].getServerName() << endl;
+		#endif
+		if (_acceptedSockets[fd][i].getServerName() == getServerName(request))
+			return _acceptedSockets[fd][i];
+	}
+	return _acceptedSockets[fd][0];
+}
 
 
 #ifdef DEBUG
