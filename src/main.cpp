@@ -24,28 +24,29 @@ int main(int argc, char **argv)
 	}
 	Webserv webserv(servers);
 	webserv.makeServerSocket();
+	webserv.run();
 
 
-	std::ifstream inputFile("ClientRequestSample.txt");
-	std::stringstream buffer;
-	buffer << inputFile.rdbuf();
+	// std::ifstream inputFile("ClientRequestSample.txt");
+	// std::stringstream buffer;
+	// buffer << inputFile.rdbuf();
 
-	std::string requestMessage = buffer.str();
-	//for debug
-	std::cout << requestMessage << std::endl;
-	std::cout << "-------------------------------------" << std::endl;
+	// std::string requestMessage = buffer.str();
+	// //for debug
+	// std::cout << requestMessage << std::endl;
+	// std::cout << "-------------------------------------" << std::endl;
 
 
-	ServerConfig server = servers.getDefaultServer();
-	ClientRequest clientrequest(requestMessage, server);
+	// ServerConfig server = servers.getDefaultServer();
+	// ClientRequest clientrequest(requestMessage, server);
 
-	//for debug
-	clientrequest.PrintRequest();
+	// //for debug
+	// clientrequest.PrintRequest();
 
-	ServerResponse res = ServerResponse(clientrequest);
-	cout << "--- response from server (START) ---" << endl;
-	cout << res.getResponse();
-	cout << "--- response from server (END)   ---" << endl;
+	// ServerResponse res = ServerResponse(clientrequest);
+	// cout << "--- response from server (START) ---" << endl;
+	// cout << res.getResponse();
+	// cout << "--- response from server (END)   ---" << endl;
 	
 	return (0);
 }

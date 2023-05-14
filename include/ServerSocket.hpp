@@ -20,6 +20,8 @@
 # include <netinet/in.h>
 # include <netdb.h>
 
+# include <fcntl.h>
+
 using namespace std;
 
 class ServerSocket

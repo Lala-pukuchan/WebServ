@@ -64,5 +64,12 @@ re : fclean all
 t : all
 	./webserv default.conf
 
-.PHONY: all clean fclean re t
+p ?= 8080
+c :
+	curl -i -X GET localhost:$(p)
+
+s :
+	siege -b -t 10s http://localhost:$(p)
+
+.PHONY: all clean fclean re t c s
 
