@@ -87,25 +87,37 @@ bool ServerResponse::existFile(){
 	return (!stat(_file_true_path.c_str(), &buffer));
 }
 
+void ServerResponse::existIndexFile(){
+	string bkFile = _file_true_path;
+	for (size_t i = 0; i < _conf.getIndexes().size(); ++i) {
+		string index = _conf.getIndexes()[i];
+		_file_true_path = bkFile + index;
+		if (existFile()){
+			size_t lastDotPos = index.find_last_of('.');
+			if (lastDotPos != string::npos) {
+				_file_ext = index.substr(lastDotPos, index.size() -1);
+			}
+			break;
+		}
+	}
+}
+
 bool ServerResponse::getDir(){
 
 	bool isDir = false;
-	string bk = _file_true_path;
+	string bkDir = _file_true_path;
 
 	if (_file_ext.empty()){
 		if (_file_true_path.at(_file_true_path.size() - 1) != '/')
 			_file_true_path += "/";
-		_file_true_path += DEFAULT_INDEX_PAGE;
-		if (existFile())
-			_file_ext = ".html";
-		else
-		{
+		existIndexFile();
+		if (!existFile()){
 			isDir = true;
 			if (_conf.getAutoindex() == "on"){
 				DIR* dir;
 				struct dirent* entry;
-				char* dirPath = new char[bk.length() + 1];
-    			strcpy(dirPath, bk.c_str());
+				char* dirPath = new char[bkDir.length() + 1];
+    			strcpy(dirPath, bkDir.c_str());
 				dir = opendir(dirPath);
 				if (!dir) {
 					setResponse("404", "", "");

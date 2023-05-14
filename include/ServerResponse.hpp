@@ -4,8 +4,6 @@
 #include "ClientRequest.hpp"
 #include <dirent.h>
 
-# define DEFAULT_INDEX_PAGE "index.html"
-
 /* setting */
 // mime-type
 typedef pair<string, string> stringpair_t;
@@ -13,6 +11,7 @@ const stringpair_t mime[] = {
   stringpair_t(".txt", "text/plain"),
   stringpair_t(".html", "text/html"),
   stringpair_t(".htm", "text/html"),
+  stringpair_t(".php", "text/html"),
   stringpair_t(".xml", "text/xml"),
   stringpair_t(".js", "text/javascript"),
   stringpair_t(".vbs", "text/vbscript"),
@@ -66,6 +65,7 @@ class ServerResponse
 
 		/* File Handler */
 		bool existFile();
+		void existIndexFile();
 		bool getDir();
 		void getFile();
 		void setFile();
