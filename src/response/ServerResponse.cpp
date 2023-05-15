@@ -144,8 +144,10 @@ bool ServerResponse::getDir(){
 
 void ServerResponse::getFile(){
 	ifstream ifs(_file_true_path);
-	if (!ifs.is_open())
+	if (!existFile()){
 		setResponse("404", "", "");
+	} else if (!ifs.is_open())
+		setResponse("403", "", "");
 	else
 	{
 		string content;
