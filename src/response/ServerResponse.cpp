@@ -49,8 +49,8 @@ void ServerResponse::setResponse(string status_code, string response_message_bod
 
 /* request checker */
 bool ServerResponse::checkMethod() {
-    for (int i = 0; i < static_cast<int>(_req.getAllowedMethod().size()); i++) {
-		if (_method == _req.getAllowedMethod()[i])
+    for (int i = 0; i < static_cast<int>(_conf.getAllowedMethods().size()); i++) {
+		if (_method == _conf.getAllowedMethods()[i])
 			return (false);
     }
 	return (true);
