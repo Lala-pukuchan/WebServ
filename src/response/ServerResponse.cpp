@@ -58,15 +58,17 @@ bool ServerResponse::checkMethod() {
 
 bool ServerResponse::checkContentLength(){ return (stoi(_req.getContentLength()) > _req.getMaxBodySize()); }
 
+bool ServerResponse::checkPath(){ return (_file_true_path.empty()); }
+
 bool ServerResponse::checkClientRequest() {
-	bool m = false;
-	if ((m = checkMethod()) || (checkContentLength())){
-		if (m)
-			setResponse("405", "", "");
-		else
-			setResponse("413", "", "");
+	if (checkMethod())
+		setResponse("405", "", "");
+	else if (checkContentLength())
+		setResponse("413", "", "");
+	else if (checkPath())
+		setResponse("404", "", "");
+	if (!_res.empty())
 		return (true);
-	}
 	return (false);
 }
 
