@@ -58,6 +58,7 @@ class ServerResponse
 		/* request checker */
 		bool checkMethod();
 		bool checkContentLength();
+		bool checkPath();
 		bool checkClientRequest();
 
 		/* cgi */
