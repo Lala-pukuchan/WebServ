@@ -121,6 +121,7 @@ bool ServerResponse::getDir(){
 				char* dirPath = new char[bkDir.length() + 1];
     			strcpy(dirPath, bkDir.c_str());
 				dir = opendir(dirPath);
+				delete [] dirPath;
 				if (!dir) {
 					setResponse("404", "", "");
 					return (isDir);
