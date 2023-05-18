@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:13:34 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/13 18:56:03 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/18 14:52:46 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,6 +212,10 @@ void LocationConfig::PrintLocationConfig()
 	std::cout << "index: ";
 	for (size_t i = 0; i < this->_indexes.size(); i++)
 		std::cout << this->_indexes[i] << " ";
+	std::cout << std::endl;
+	std::cout << "allowed_methods: ";
+	for (size_t i = 0; i < this->_allowedMethods.size(); i++)
+		std::cout << this->_allowedMethods[i] << " ";
 	std::cout << std::endl;
 	std::cout << "error_page: ";
 	for (std::map<int, std::string>::iterator it = this->_errorPage.begin(); it != this->_errorPage.end(); it++)

@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:46:18 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/13 18:55:54 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/18 10:55:50 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,6 +250,12 @@ void ServerConfig::PrintServerConfig()
 		std::cout << this->_allowedMethods[i] << " ";
 	std::cout << std::endl;
 	std::cout << "location: " << std::endl;
+	std::cout << "error_page: " << std::endl;
+	for (std::map<int, std::string>::iterator it = this->_errorPage.begin(); it != this->_errorPage.end(); it++)
+		std::cout << "  " << it->first << ": " << it->second << std::endl;
+	std::cout << "return: " << std::endl;
+	for (std::map<int, std::string>::iterator it = this->_return_redirect.begin(); it != this->_return_redirect.end(); it++)
+		std::cout << "  " << it->first << ": " << it->second << std::endl;
 	std::cout << "-----" << std::endl;
 	for (std::map<std::string, LocationConfig>::iterator it = this->_locations.begin(); it != this->_locations.end(); it++)
 	{
@@ -257,12 +263,6 @@ void ServerConfig::PrintServerConfig()
 		it->second.PrintLocationConfig();
 		std::cout << "-----" << std::endl;
 	}
-	std::cout << "error_page: " << std::endl;
-	for (std::map<int, std::string>::iterator it = this->_errorPage.begin(); it != this->_errorPage.end(); it++)
-		std::cout << "  " << it->first << ": " << it->second << std::endl;
-	std::cout << "return: " << std::endl;
-	for (std::map<int, std::string>::iterator it = this->_return_redirect.begin(); it != this->_return_redirect.end(); it++)
-		std::cout << "  " << it->first << ": " << it->second << std::endl;
 }
 
 std::string ServerConfig::getServerName() const { return (this->_serverName); }

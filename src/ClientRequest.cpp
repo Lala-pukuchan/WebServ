@@ -1,11 +1,11 @@
 #include "ClientRequest.hpp"
 #include "ServerConfig.hpp"
 
-ClientRequest::ClientRequest () : _is_cgi(false)
+ClientRequest::ClientRequest () : _is_cgi(false), _is_redirect(false)
 {
 }
 
-ClientRequest::ClientRequest(string requestMessage, ServerConfig Server) : _is_cgi(false)
+ClientRequest::ClientRequest(string requestMessage, ServerConfig Server) : _is_cgi(false), _is_redirect(false)
 {
 	_server = Server;
 	readClientRequest(requestMessage);
@@ -52,7 +52,7 @@ void ClientRequest::readClientRequest(std::string requestMessage)
 	// get message body
 	for (std::string line; getline(iss, line);)
 		_request_message_body += line + "\n";
-	
+
 	setPath();
 }
 
@@ -75,14 +75,29 @@ void ClientRequest::setPath()
 	if (LongestMatchPath != "")
 	{
 		LocationConfig location = locations[LongestMatchPath];
+		// redirectが存在したら
+		if (!(location.getReturnRedirect().empty()))
+		{
+			_is_redirect = true;
+			_file_absolute_path = location.getReturnRedirect().begin()->second;
+			return ;
+		}
 		std::string sub_path = _path.substr(LongestMatchPath.length());
 		if (sub_path.find(".") != std::string::npos)
 		{
+			std::string after_dot = sub_path.substr(sub_path.find("."));
+			_file_ext = after_dot.substr(0, after_dot.find("/"));
+			std::vector<std::string> cgi_extensions = location.getCgiExtension();
+			if (std::find(cgi_extensions.begin(), cgi_extensions.end(), _file_ext) == location.getCgiExtension().end())
+			{
+				_file_absolute_path = location.getAlias() + sub_path;
+				return ;
+			}
 			_is_cgi = true;
 			_file_absolute_path = location.getAlias() + sub_path.substr(0, sub_path.find("/"));
-			_file_ext = (sub_path.substr(sub_path.find("."))).substr(0, sub_path.find("/") - 1);
 			if (sub_path.find("/") != std::string::npos)
 				_cgi_path_info = sub_path.substr(sub_path.find("/"));
+			return ;
 		}
 		else
 			_file_absolute_path = location.getAlias() + sub_path;
@@ -104,6 +119,7 @@ void ClientRequest::PrintRequest()
 	std::cout << "is_cgi: " << _is_cgi << std::endl;
 	std::cout << "file_ext: " << _file_ext << std::endl;
 	std::cout << "cgi_path_info: " << _cgi_path_info << std::endl;
+	std::cout << "is_redirect: " << _is_redirect << std::endl;
 	std::cout << "-------------------------------------" << std::endl;
 }
 
@@ -128,3 +144,5 @@ string ClientRequest::getRequestMessageBody() const { return (_request_message_b
 string ClientRequest::getPathInfo() const { return (_path); }
 
 bool ClientRequest::getIsCgi() const { return (_is_cgi); }
+
+ServerConfig ClientRequest::getServerConfig() const { return (_server); }
