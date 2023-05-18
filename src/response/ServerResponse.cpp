@@ -199,10 +199,12 @@ void ServerResponse::deleteFile(){
 
 /* HTTP Method */
 void ServerResponse::Get(){
-	if (_req.getIsCgi())
-		getCgiResults();
-	else
-	{
+	if (_req.getIsCgi()){
+		if (!existFile())
+			setResponse("404", "", "");
+		else
+			getCgiResults();
+	} else {
 		if (!getDir())
 			getFile();
 	}
