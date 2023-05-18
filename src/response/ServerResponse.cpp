@@ -23,16 +23,16 @@ void ServerResponse::setResponse(string status_code, string response_message_bod
 	if (!content_type.empty())
 		res_content_type = "Content-Type: " + content_type + "\r\n";
 	res_response_message_body = response_message_body;
-	//if (_method == "OPTIONS")
-	//{
-	//	res_allow = "Allow: ";
-	//	for (int i = 0; i < static_cast<int>(_req.getAllowedMethod().size()); i++){
-	//		if (i != 0)
-	//			res_allow += ",";
-	//		res_allow += _req.getAllowedMethod()[i];
-    //	}
-	//	res_allow += "\r\n";
-	//}
+	if (status_code == "405")
+	{
+		res_allow = "Allow: ";
+		for (int i = 0; i < static_cast<int>(_conf.getAllowedMethods().size()); i++){
+			if (i != 0)
+				res_allow += ",";
+			res_allow += _conf.getAllowedMethods()[i];
+    	}
+		res_allow += "\r\n";
+	}
 
 	// create res
 	ostringstream os;
