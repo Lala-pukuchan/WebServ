@@ -82,6 +82,7 @@ void CgiExe::exe (){
 		// exe error
 		cout << "Failed to exe." << endl;
 		_status = "500";
+		exit (1);
 
 	} else {
 
