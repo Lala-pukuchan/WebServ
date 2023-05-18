@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:13:34 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/18 14:52:46 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/18 18:51:31 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,11 @@ void LocationConfig::setLocationConfig(const std::vector<std::string> &configStr
 		else if (key == "error_page" || key == "return")
 			getIntValue(line);
 		else if (key == "alias")
+		{
 			this->_alias = getOneValue(line, pos);
+			if (this->_alias[this->_alias.size() - 1] == '/')
+				this->_alias = this->_alias.substr(0, this->_alias.size() - 1);
+		}
 		else if (key == "allow_methods")
 			setAllowedMethods(line, pos);
 		else if (key == "autoindex")

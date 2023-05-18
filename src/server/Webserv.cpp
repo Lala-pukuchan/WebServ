@@ -114,14 +114,23 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 	char buffer[BUFSIZE + 1];
 	int len;
 
-	len = recv(fd, buffer, BUFSIZE, 0);
-	if (len == -1)
-	{
-		perror("recv");
-		return ;
+	while (true) {
+		len = recv(fd, buffer, BUFSIZE, 0);
+		if (len == -1)
+		{
+			if (errno == EWOULDBLOCK || errno == EAGAIN)
+				break;
+			perror("recv");
+			return ;
+		}
+		else if (len == 0) // connection closed
+			break;
+		buffer[len] = '\0';
+		strage[fd] += buffer;
+		if (len != BUFSIZE) // end of file or no more data to read
+			break;
 	}
-	buffer[len] = '\0';
-	strage[fd] += buffer;
+
 	if (len != BUFSIZE) // end of file
 	{
 		FD_CLR(fd, masterRecvFds);

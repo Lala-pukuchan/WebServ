@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:46:18 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/18 10:55:50 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/18 18:50:57 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,8 @@ void ServerConfig::setServerConfig(const std::vector<std::string> &configStrings
 			if (value.empty() || check != "{")
 				throw EmptyValueError(pos, line);
 			LocationConfig location(*this);
+			if (value.length() != 1 && value[value.size() - 1] == '/')
+				value = value.substr(0, value.size() - 1);
 			location.setLocationConfig(configStrings, pos, value);
 			_locations[value] = location;
 		}
@@ -79,7 +81,11 @@ void ServerConfig::setServerConfig(const std::vector<std::string> &configStrings
 		else if (key == "allow_methods")
 			setAllowedMethods(line, pos);
 		else if (key == "alias")
+		{
 			this->_alias = getOneValue(line, pos);
+			if (this->_alias[this->_alias.size() - 1] == '/')
+				this->_alias = this->_alias.substr(0, this->_alias.size() - 1);
+		}
 		else if (key == "server_name")
 			this->_serverName = getOneValue(line, pos);
 		else if (key == "listen")

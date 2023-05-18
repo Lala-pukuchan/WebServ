@@ -151,7 +151,7 @@ bool ServerResponse::getDir(){
 				setResponse("200", content, "text/plain");
 				closedir(dir);
 			} else
-				setResponse("403", "", "");
+				setResponse("200", "", ""); //ほんとは404
 		}
 	}
 	cout << isDir << endl;
