@@ -117,10 +117,14 @@ bool ServerResponse::getDir(){
 	bool isDir = false;
 	string bkDir = _file_true_path;
 
+	cout << "getDir" << endl;
+
 	if (_file_ext.empty()){
 		if (_file_true_path.at(_file_true_path.size() - 1) != '/')
 			_file_true_path += "/";
 		existIndexFile();
+		cout << _file_true_path << endl;
+		cout << existFile() << endl;
 		if (!existFile()){
 			isDir = true;
 			if (_conf.getAutoindex()){
@@ -150,6 +154,7 @@ bool ServerResponse::getDir(){
 				setResponse("403", "", "");
 		}
 	}
+	cout << isDir << endl;
 	return (isDir);
 }
 
@@ -165,7 +170,13 @@ void ServerResponse::getFile(){
 		string line;
 		while (getline(ifs, line))
 			content += line;
-		setResponse("200", content, mime_mapper.at(_file_ext));
+		string ext = "";
+		try {
+			ext = mime_mapper.at(_file_ext);			
+		} catch (const std::exception& e) {
+			ext = "application/octet-stream";
+		}
+		setResponse("200", content, ext);
 	}
 	ifs.close();
 }
@@ -235,6 +246,7 @@ void ServerResponse::Delete(){ deleteFile(); }
 ServerResponse::ServerResponse (ClientRequest &req) : 
 	_req(req), _conf(req.getServerConfig()), _res(""), _method(req.getMethod()), _file_true_path(req.getFileAbsolutePath()), _file_ext(req.getFileExt()){
 
+	req.PrintRequest();
 	if (checkClientRequest())
 		return ;
 
