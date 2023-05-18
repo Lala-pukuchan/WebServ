@@ -53,14 +53,18 @@ void ServerResponse::setResponse(string status_code, string response_message_bod
 
 /* request checker */
 bool ServerResponse::checkMethod() {
-    for (int i = 0; i < static_cast<int>(_conf.getAllowedMethods().size()); i++) {
+	for (int i = 0; i < static_cast<int>(_conf.getAllowedMethods().size()); i++) {
 		if (_method == _conf.getAllowedMethods()[i])
 			return (false);
-    }
+	}
 	return (true);
 }
 
-bool ServerResponse::checkContentLength(){ return (stoi(_req.getContentLength()) > _req.getMaxBodySize()); }
+bool ServerResponse::checkContentLength(){
+	if (_req.getContentLength().empty())
+		return (false);
+	return (stoi(_req.getContentLength()) > _req.getMaxBodySize());
+}
 
 bool ServerResponse::checkPath(){ return (_file_true_path.empty()); }
 
@@ -119,7 +123,7 @@ bool ServerResponse::getDir(){
 		existIndexFile();
 		if (!existFile()){
 			isDir = true;
-			if (_conf.getAutoindex() == "on"){
+			if (_conf.getAutoindex()){
 				DIR* dir;
 				struct dirent* entry;
 				char* dirPath = new char[bkDir.length() + 1];

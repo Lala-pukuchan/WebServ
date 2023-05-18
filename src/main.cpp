@@ -7,14 +7,17 @@ int main(int argc, char **argv)
 {
 	Servers servers;
 
-	if (argc != 2)
+	if (argc > 2)
 	{
 		std::cout << "usage: ./webserv [config_file]" << std::endl;
 		return (1);
 	}
-	servers.ReadConfig(argv[1]);
 	try
 	{
+		if (argc == 1)
+			servers.ReadConfig("conf/default.conf");
+		else
+			servers.ReadConfig(argv[1]);
 		servers.setServersConfig();
 		servers.PrintServersConfig();
 	}

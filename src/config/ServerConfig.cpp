@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:46:18 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/10 22:28:21 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/18 10:55:50 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "LocationConfig.hpp"
 #include "Servers.hpp"
 
-ServerConfig::ServerConfig(void) : _port(""), _maxBodySize(1)
+ServerConfig::ServerConfig(void) : _serverName(""), _port(""), _alias(""), _maxBodySize(1), _autoindex(false)
 {
 }
 
@@ -36,7 +36,6 @@ ServerConfig& ServerConfig::operator=(const ServerConfig& src)
 		this->_autoindex = src._autoindex;
 		this->_return_redirect = src._return_redirect;
 		this->_upload_path = src._upload_path;
-		this->_cgi = src._cgi;
 		this->_cgi_extension = src._cgi_extension;
 	}
 	return (*this);
@@ -69,8 +68,8 @@ void ServerConfig::setServerConfig(const std::vector<std::string> &configStrings
 			iss >> value >> check;
 			if (value.empty() || check != "{")
 				throw EmptyValueError(pos, line);
-			LocationConfig location;
-			location.setLocationConfig(configStrings, pos);
+			LocationConfig location(*this);
+			location.setLocationConfig(configStrings, pos, value);
 			_locations[value] = location;
 		}
 		else if (key == "index")
@@ -79,10 +78,22 @@ void ServerConfig::setServerConfig(const std::vector<std::string> &configStrings
 			setCgiExtension(line, pos);
 		else if (key == "allow_methods")
 			setAllowedMethods(line, pos);
+		else if (key == "alias")
+			this->_alias = getOneValue(line, pos);
 		else if (key == "server_name")
 			this->_serverName = getOneValue(line, pos);
 		else if (key == "listen")
 			this->_port = getOneValue(line, pos);
+		else if (key == "autoindex")
+		{
+			string autoindex = getOneValue(line, pos);
+			if (autoindex == "on")
+				this->_autoindex = true;
+			else if (autoindex == "off")
+				this->_autoindex = false;
+			else
+				throw ConfigContentError(pos, line);
+		}
 		else if (key == "upload_path")
 			this->_upload_path = getOneValue(line, pos);
 		else if (key == "client_max_body_size")
@@ -205,7 +216,7 @@ void ServerConfig::setAllowedMethods(const std::string &line, const size_t &pos)
 		if (value.find(';') != std::string::npos)
 		{
 			value = value.substr(0, value.find(';'));
-			if (value != "GET" && value != "HEAD" && value != "POST" &&  value != "PUT" &&value != "DELETE" && value != "OPTIONS")
+			if (value != "GET" && value != "POST" && value != "DELETE" && value != "PUT")
 				throw InvalidMethodError(pos, line);
 			_allowedMethods.push_back(value);
 			break;
@@ -239,6 +250,12 @@ void ServerConfig::PrintServerConfig()
 		std::cout << this->_allowedMethods[i] << " ";
 	std::cout << std::endl;
 	std::cout << "location: " << std::endl;
+	std::cout << "error_page: " << std::endl;
+	for (std::map<int, std::string>::iterator it = this->_errorPage.begin(); it != this->_errorPage.end(); it++)
+		std::cout << "  " << it->first << ": " << it->second << std::endl;
+	std::cout << "return: " << std::endl;
+	for (std::map<int, std::string>::iterator it = this->_return_redirect.begin(); it != this->_return_redirect.end(); it++)
+		std::cout << "  " << it->first << ": " << it->second << std::endl;
 	std::cout << "-----" << std::endl;
 	for (std::map<std::string, LocationConfig>::iterator it = this->_locations.begin(); it != this->_locations.end(); it++)
 	{
@@ -246,12 +263,6 @@ void ServerConfig::PrintServerConfig()
 		it->second.PrintLocationConfig();
 		std::cout << "-----" << std::endl;
 	}
-	std::cout << "error_page: " << std::endl;
-	for (std::map<int, std::string>::iterator it = this->_errorPage.begin(); it != this->_errorPage.end(); it++)
-		std::cout << "  " << it->first << ": " << it->second << std::endl;
-	std::cout << "return: " << std::endl;
-	for (std::map<int, std::string>::iterator it = this->_return_redirect.begin(); it != this->_return_redirect.end(); it++)
-		std::cout << "  " << it->first << ": " << it->second << std::endl;
 }
 
 std::string ServerConfig::getServerName() const { return (this->_serverName); }
@@ -268,8 +279,6 @@ std::map<int, std::string> ServerConfig::getReturnRedirect() const { return (thi
 
 std::string ServerConfig::getUploadPath() const { return (this->_upload_path); }
 
-std::string ServerConfig::getAutoindex() const { return (this->_autoindex); }
-
-bool ServerConfig::getCgi() const { return (this->_cgi); }
+bool ServerConfig::getAutoindex() const { return (this->_autoindex); }
 
 std::vector<std::string> ServerConfig::getCgiExtension() const { return (this->_cgi_extension); }

@@ -33,13 +33,14 @@ class ClientRequest
 		string _server_name;
 		string _content_type;
 		bool _is_cgi;
+		bool _is_redirect;
 
 		vector<string> _allowedMethod;
 		int _maxBodySize;
 
 		ServerConfig _server;
 
-		ClientRequest ();
+		ClientRequest();
 		void readClientRequest(std::string requestMessage);
 		void setPath();
 
@@ -57,6 +58,7 @@ class ClientRequest
 		string getRequestMessageBody() const;
 		string getPathInfo() const;
 		bool getIsCgi() const;
+		ServerConfig getServerConfig() const;
 
 		//for debug
 		void PrintRequest();
