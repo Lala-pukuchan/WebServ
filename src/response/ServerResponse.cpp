@@ -16,6 +16,7 @@ void ServerResponse::setResponse(string status_code, string response_message_bod
 	string res_content_type = "";
 	string res_response_message_body = "";
 	string res_allow = "";
+	string res_location = "";
 
 	// update res contents
 	if (_method != "DELETE")
@@ -33,12 +34,15 @@ void ServerResponse::setResponse(string status_code, string response_message_bod
     	}
 		res_allow += "\r\n";
 	}
+	if (status_code == "301")
+		res_location = "Location: " + _conf.getReturnRedirect().at(301) + "\r\n";
 
 	// create res
 	ostringstream os;
 	os << 
 		"HTTP/1.1 " << status_code << " " << status_mapper.at(status_code) << "\r\n"
 		<< res_allow
+		<< res_location
 		<< res_content_length
 		<< "Connection: close\r\n"
 		<< res_content_type
@@ -204,6 +208,8 @@ void ServerResponse::Get(){
 			setResponse("404", "", "");
 		else
 			getCgiResults();
+	} else if (_conf.getReturnRedirect().size() != 0) {
+		setResponse("301", "", "");
 	} else {
 		if (!getDir())
 			getFile();
