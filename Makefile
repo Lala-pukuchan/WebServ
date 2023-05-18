@@ -9,8 +9,16 @@ SERVERDIR := server
 SERVERS := ServerSocket.cpp Webserv.cpp
 SERVERS := $(addprefix $(SERVERDIR)/, $(SERVERS))
 
+REQUESTDIR := request
+REQUESTS := ClientRequest.cpp
+REQUESTS := $(addprefix $(REQUESTDIR)/, $(REQUESTS))
+
+RESPONSEDIR := response
+RESPONSES := ServerResponse.cpp CgiExe.cpp
+RESPONSES := $(addprefix $(RESPONSEDIR)/, $(RESPONSES))
+
 SRCDIR	:= src
-SRCS	:= main.cpp ClientRequest.cpp $(CONFIGS) $(SERVERS)
+SRCS	:= main.cpp $(CONFIGS) $(SERVERS) $(REQUESTS) $(RESPONSES)
 SORCES	:= $(addprefix $(SRCDIR)/, $(SRCS))
 
 OBJDIR	:= objs
@@ -56,5 +64,12 @@ re : fclean all
 t : all
 	./webserv default.conf
 
-.PHONY: all clean fclean re t
+p ?= 8080
+c :
+	curl -i -X GET localhost:$(p)
+
+s :
+	siege -b -t 10s http://localhost:$(p)
+
+.PHONY: all clean fclean re t c s
 

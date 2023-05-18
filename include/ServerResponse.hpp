@@ -2,13 +2,16 @@
 #define SERVER_RES_H
 
 #include "ClientRequest.hpp"
+#include <dirent.h>
 
+/* setting */
 // mime-type
 typedef pair<string, string> stringpair_t;
 const stringpair_t mime[] = {
   stringpair_t(".txt", "text/plain"),
   stringpair_t(".html", "text/html"),
   stringpair_t(".htm", "text/html"),
+  stringpair_t(".php", "text/html"),
   stringpair_t(".xml", "text/xml"),
   stringpair_t(".js", "text/javascript"),
   stringpair_t(".vbs", "text/vbscript"),
@@ -24,7 +27,7 @@ const stringpair_t mime[] = {
 const int mime_size = sizeof(mime) / sizeof(mime[0]);
 extern map <string, string> mime_mapper;
 
-// response status
+// status
 const stringpair_t status[] = {
   stringpair_t("200", "OK"),
   stringpair_t("201", "Created"),
@@ -42,41 +45,45 @@ class ServerResponse
 {
 
 	private:
-		// req & res
 		ClientRequest _req;
+		ServerConfig _conf;
 		string _res;
 		string _method;
 		string _file_true_path;
+		string _file_ext;
 
-		// error check
-		bool methodCheck();
-		bool contentLengthCheck();
+		/* response getter / setter */
+		void setResponse(string status_code, string response_message_body, string content_type);
 
-		// create res
-		void setRes(string status_code, string response_message_body, string content_type);
+		/* request checker */
+		bool checkMethod();
+		bool checkContentLength();
+		bool checkPath();
+		bool checkClientRequest();
 
-		// cgi
-		bool isCgi();
+		/* cgi */
+		void getCgiResults();
 
-		// handle file
+		/* File Handler */
 		bool existFile();
-		void getFileContents();
-		void updateFileContents();
+		void existIndexFile();
+		bool getDir();
+		void getFile();
+		void setFile();
+		void deleteFile();
 
-		// http method
+		/* HTTP Method */
 		void Get();
-		void Head();
 		void Post();
 		void Put();
 		void Delete();
-		void Options();
 
 	public:
-		// const & dest
+		/* constructor / destructor */
 		ServerResponse (ClientRequest &req);
 		~ServerResponse ();
 
-		// getter
+		/* response getter / setter */
 		string getResponse () const;
 
 };
