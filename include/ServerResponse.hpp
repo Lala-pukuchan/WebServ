@@ -3,6 +3,9 @@
 
 #include "ClientRequest.hpp"
 #include <dirent.h>
+#include <ctime>
+
+#define DEFAULT_ERROR_PAGE "./docs/error_page/default_error.html"
 
 /* setting */
 // mime-type
@@ -52,6 +55,10 @@ class ServerResponse
 		string _file_true_path;
 		string _file_ext;
 
+		/* get time for res */
+		string getCurrentTime();
+		string getLastModifiedTime(const string& filePath);
+
 		/* response getter / setter */
 		void setResponse(string status_code, string response_message_body, string content_type);
 
@@ -68,6 +75,7 @@ class ServerResponse
 		bool existFile();
 		void existIndexFile();
 		bool getDir();
+		string getErrorBody(int status_code);
 		void getFile();
 		void setFile();
 		void deleteFile();
