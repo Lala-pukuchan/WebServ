@@ -1,0 +1,17 @@
+HTTP/1.1 200 OK
+Server: nginx/1.23.4
+Date: Fri, 19 May 2023 10:55:51 GMT
+Content-Type: text/html
+Transfer-Encoding: chunked
+Connection: keep-alive
+
+<html>
+<head><title>Index of /</title></head>
+<body>
+<h1>Index of /</h1><hr><pre><a href="../">../</a>
+<a href="autoindex/">autoindex/</a>                                         19-May-2023 08:01                   -
+<a href="autoindex2/">autoindex2/</a>                                        19-May-2023 10:25                   -
+<a href="error_page/">error_page/</a>                                        19-May-2023 09:27                   -
+<a href="test.txt">test.txt</a>                                           19-May-2023 08:32                  11
+</pre><hr></body>
+</html>

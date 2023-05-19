@@ -127,15 +127,20 @@ bool ServerResponse::existFile(){
 
 void ServerResponse::existIndexFile(){
 	string bkFile = _file_true_path;
-	for (size_t i = 0; i < _conf.getIndexes().size(); ++i) {
-		string index = _conf.getIndexes()[i];
-		_file_true_path = bkFile + index;
-		if (existFile()){
-			size_t lastDotPos = index.find_last_of('.');
-			if (lastDotPos != string::npos) {
-				_file_ext = index.substr(lastDotPos, index.size() -1);
+	if (!_conf.getIndexes().size()){
+		_file_true_path = bkFile + DEFAULT_INDEX_PAGE;
+		_file_ext = ".html";
+	} else {
+		for (size_t i = 0; i < _conf.getIndexes().size(); ++i) {
+			string index = _conf.getIndexes()[i];
+			_file_true_path = bkFile + index;
+			if (existFile()){
+				size_t lastDotPos = index.find_last_of('.');
+				if (lastDotPos != string::npos) {
+					_file_ext = index.substr(lastDotPos, index.size() -1);
+				}
+				break;
 			}
-			break;
 		}
 	}
 }
@@ -145,17 +150,18 @@ bool ServerResponse::getDir(){
 	bool isDir = false;
 	string bkDir = _file_true_path;
 
-	cout << "getDir" << endl;
-
 	if (_file_ext.empty()){
+
 		if (_file_true_path.at(_file_true_path.size() - 1) != '/')
 			_file_true_path += "/";
+		
 		existIndexFile();
-		cout << _file_true_path << endl;
-		cout << existFile() << endl;
+
 		if (!existFile()){
 			isDir = true;
-			if (_conf.getAutoindex()){
+			cout << "non" << _conf.getAutoindex() << endl;
+			if (1){
+				cout << "auto" << endl;
 				DIR* dir;
 				struct dirent* entry;
 				char* dirPath = new char[bkDir.length() + 1];
@@ -166,23 +172,19 @@ bool ServerResponse::getDir(){
 					setResponse("404", "", "");
 					return (isDir);
 				}
-				string content;
+				stringstream content;
+				content << "<html><head><title>Index of /</title></head><body><h1>Index of /</h1><ul>";
 				while ((entry = readdir(dir))) {
 					if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, ".."))
-					{
-						if (!content.empty())
-							content += ",";
-						content += entry->d_name;
-					}
+						content << "<li>" << entry->d_name << "</li>";
 				}
-				content += "\n";
-				setResponse("200", content, "text/plain");
+				content << "</ul></body></html>";
+				setResponse("200", content.str(), "text/html");
 				closedir(dir);
 			} else
-				setResponse("200", "", ""); //ほんとは404
+				setResponse("403", getErrorBody(403), "");
 		}
 	}
-	cout << isDir << endl;
 	return (isDir);
 }
 
