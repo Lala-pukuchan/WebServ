@@ -6,6 +6,26 @@
 map<string, string> mime_mapper (mime, mime + mime_size);
 map<string, string> status_mapper (status, status + status_size);
 
+/* get time */
+string ServerResponse::getCurrentTime() {
+    time_t currentTime = time(nullptr);
+    tm* currentTimeStruct = gmtime(&currentTime);
+    char buffer[128];
+    strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S GMT", currentTimeStruct);
+    return static_cast<string>(buffer);
+}
+
+string ServerResponse::getLastModifiedTime(const string& filePath) {
+    struct stat fileStat;
+    if (stat(filePath.c_str(), &fileStat) != 0)
+        return "";
+    time_t lastModifiedTime = fileStat.st_mtime;
+    tm* lastModifiedTimeStruct = gmtime(&lastModifiedTime);
+    char buffer[128];
+    strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S GMT", lastModifiedTimeStruct);
+    return string(buffer);
+}
+
 /* response getter / setter */
 string ServerResponse::getResponse () const { return (_res); }
 
@@ -17,12 +37,17 @@ void ServerResponse::setResponse(string status_code, string response_message_bod
 	string res_response_message_body = "";
 	string res_allow = "";
 	string res_location = "";
+	string last_modified_time = "";
 
 	// update res contents
 	if (_method != "DELETE")
 		res_content_length = "Content-Length: " + to_string(response_message_body.size()) + "\r\n";
-	if (!content_type.empty())
+	if (!content_type.empty()){
 		res_content_type = "Content-Type: " + content_type + "\r\n";
+		if (status_code == "200")
+			last_modified_time = "Last-Modified: " + getLastModifiedTime(_file_true_path) + "\r\n";
+	} else
+		res_content_type = "Content-Type: " + mime_mapper.at(".html") + "\r\n";
 	res_response_message_body = response_message_body;
 	if (status_code == "405")
 	{
@@ -41,11 +66,14 @@ void ServerResponse::setResponse(string status_code, string response_message_bod
 	ostringstream os;
 	os << 
 		"HTTP/1.1 " << status_code << " " << status_mapper.at(status_code) << "\r\n"
+		<< "Server: Webserv/1.0\r\n"
+		<< "Date: " << getCurrentTime() << "\r\n"
 		<< res_allow
 		<< res_location
-		<< res_content_length
-		<< "Connection: close\r\n"
 		<< res_content_type
+		<< res_content_length
+		<< last_modified_time
+		<< "Connection: close\r\n"
 		<< "\r\n"
 		<< res_response_message_body;
 	_res = os.str();
@@ -63,7 +91,7 @@ bool ServerResponse::checkMethod() {
 bool ServerResponse::checkContentLength(){
 	if (_req.getContentLength().empty())
 		return (false);
-	return (stoi(_req.getContentLength()) > _req.getMaxBodySize());
+	return (stoi(_req.getContentLength()) > _conf.getMaxBodySize());
 }
 
 bool ServerResponse::checkPath(){ return (_file_true_path.empty()); }
@@ -99,15 +127,20 @@ bool ServerResponse::existFile(){
 
 void ServerResponse::existIndexFile(){
 	string bkFile = _file_true_path;
-	for (size_t i = 0; i < _conf.getIndexes().size(); ++i) {
-		string index = _conf.getIndexes()[i];
-		_file_true_path = bkFile + index;
-		if (existFile()){
-			size_t lastDotPos = index.find_last_of('.');
-			if (lastDotPos != string::npos) {
-				_file_ext = index.substr(lastDotPos, index.size() -1);
+	if (!_conf.getIndexes().size()){
+		_file_true_path = bkFile + DEFAULT_INDEX_PAGE;
+		_file_ext = ".html";
+	} else {
+		for (size_t i = 0; i < _conf.getIndexes().size(); ++i) {
+			string index = _conf.getIndexes()[i];
+			_file_true_path = bkFile + index;
+			if (existFile()){
+				size_t lastDotPos = index.find_last_of('.');
+				if (lastDotPos != string::npos) {
+					_file_ext = index.substr(lastDotPos, index.size() -1);
+				}
+				break;
 			}
-			break;
 		}
 	}
 }
@@ -117,17 +150,18 @@ bool ServerResponse::getDir(){
 	bool isDir = false;
 	string bkDir = _file_true_path;
 
-	cout << "getDir" << endl;
-
 	if (_file_ext.empty()){
+
 		if (_file_true_path.at(_file_true_path.size() - 1) != '/')
 			_file_true_path += "/";
+		
 		existIndexFile();
-		cout << _file_true_path << endl;
-		cout << existFile() << endl;
+
 		if (!existFile()){
 			isDir = true;
-			if (_conf.getAutoindex()){
+			cout << "non" << _conf.getAutoindex() << endl;
+			if (1){
+				cout << "auto" << endl;
 				DIR* dir;
 				struct dirent* entry;
 				char* dirPath = new char[bkDir.length() + 1];
@@ -138,42 +172,56 @@ bool ServerResponse::getDir(){
 					setResponse("404", "", "");
 					return (isDir);
 				}
-				string content;
+				stringstream content;
+				content << "<html><head><title>Index of /</title></head><body><h1>Index of /</h1><ul>";
 				while ((entry = readdir(dir))) {
 					if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, ".."))
-					{
-						if (!content.empty())
-							content += ",";
-						content += entry->d_name;
-					}
+						content << "<li>" << entry->d_name << "</li>";
 				}
-				content += "\n";
-				setResponse("200", content, "text/plain");
+				content << "</ul></body></html>";
+				setResponse("200", content.str(), "text/html");
 				closedir(dir);
 			} else
-				setResponse("200", "", ""); //ほんとは404
+				setResponse("403", getErrorBody(403), "");
 		}
 	}
-	cout << isDir << endl;
 	return (isDir);
+}
+
+string ServerResponse::getErrorBody(int status_code){
+	string content = "";
+	string error_page = "";
+	try {
+		error_page = _conf.getErrorPage().at(status_code);
+	} catch (const exception& e) {
+		error_page = DEFAULT_ERROR_PAGE;
+	}
+	ifstream ifs(error_page);
+	if (!ifs.is_open())
+		content = "";
+	else {
+		stringstream buffer;
+		buffer << ifs.rdbuf();
+		content = buffer.str();
+	}
+	ifs.close();
+	cout << "content" << content << endl;
+	return (content);
 }
 
 void ServerResponse::getFile(){
 	ifstream ifs(_file_true_path);
-	if (!existFile()){
-		setResponse("404", "", "");
-	} else if (!ifs.is_open())
-		setResponse("403", "", "");
-	else
-	{
+	if (!ifs.is_open())
+		setResponse("404", getErrorBody(404), "");
+	else {
 		string content;
-		string line;
-		while (getline(ifs, line))
-			content += line;
+		stringstream buffer;
+		buffer << ifs.rdbuf();
+		content = buffer.str();
 		string ext = "";
 		try {
 			ext = mime_mapper.at(_file_ext);			
-		} catch (const std::exception& e) {
+		} catch (const exception& e) {
 			ext = "application/octet-stream";
 		}
 		setResponse("200", content, ext);
@@ -182,17 +230,14 @@ void ServerResponse::getFile(){
 }
 
 void ServerResponse::setFile(){
-	bool exist = false;
 	ifstream ifs(_file_true_path);
-	if ((exist = existFile()) && !ifs.is_open()){
-		setResponse("403", "", "");
+	if (!ifs.is_open()){
+		setResponse("404", getErrorBody(404), "");
 	} else {
+		_file_true_path += UPLOAD_PAGE;
 		ofstream ofs(_file_true_path, ios::trunc);
 		ofs << _req.getRequestMessageBody();
-		if (!exist)
-			setResponse("201", "create file success", "text/plain");
-		else
-			setResponse("204", "update file success", "text/plain");
+		setResponse("201", "File Created.", "text/plain");
 		ofs.close();
 	}
 	ifs.close();
