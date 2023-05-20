@@ -16,9 +16,11 @@
 |  4  |  off  |  無  |  `curl -v http://webserv1:4242/autoindex3/`  |
 
 ## POST
-|  結果  | ディレクトリ有無  |  ファイル有無  |  ファイル形式  |  パス  |
-| ---- | ---- | ---- | ---- | ---- |
-|  1  |  有  |  有  |  .txt  | `curl -v -X POST --data-binary '@./docs/upload.txt' http://localhost:4242/upload/`  |
+|  結果  | ディレクトリ有無  |  ファイル有無  |  パス  |
+| ---- | ---- | ---- | ---- |
+|  5  |  有  |  無  | `curl -v -X POST --data-binary '@./docs/upload.txt' http://localhost:4242/upload/`  |
+|  5  |  有  |  有  | `curl -v -X POST --data-binary '@./docs/upload.txt' http://localhost:4242/upload/`  |
+|  2  |  無  |  有  | `curl -v -X POST --data-binary '@./docs/upload.txt' http://localhost:4242/upload/no/`  |
 
 ## DELETE
 

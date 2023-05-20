@@ -232,7 +232,7 @@ void ServerResponse::getFile(){
 void ServerResponse::setFile(){
 	ifstream ifs(_file_true_path);
 	if (!ifs.is_open()){
-		setResponse("403", "", "");
+		setResponse("404", getErrorBody(404), "");
 	} else {
 		_file_true_path += UPLOAD_PAGE;
 		ofstream ofs(_file_true_path, ios::trunc);

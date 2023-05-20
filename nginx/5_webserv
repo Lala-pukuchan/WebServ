@@ -13,7 +13,7 @@ Content-Type: text/plain
 Content-Length: 7
 Connection: close
 
-cat docs/upload/upload.txt 
+cat docs/upload/upload
 Please upload this file.
 
 c1r14s2% cat uploaded
