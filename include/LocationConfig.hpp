@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 14:14:53 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/20 18:43:21 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/20 19:42:10 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ class LocationConfig
 		std::string getPortString() const;
 		std::string getServerName() const;
 		std::string getAlias() const;
+		std::string getCgiPath() const;
 		bool getAutoindex() const;
 		std::string getUploadPath() const;
 		std::vector<std::string> getCgiExtension() const;

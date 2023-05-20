@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:13:34 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/20 18:43:38 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/20 19:42:32 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,6 +236,8 @@ std::string LocationConfig::getServerName() const { return (this->_serverName); 
 std::string LocationConfig::getPortString() const { return (this->_port); }
 
 std::string LocationConfig::getAlias() const { return (this->_alias); }
+
+std::string LocationConfig::getCgiPath() const { return (this->_cgi_path); }
 
 bool LocationConfig::getAutoindex() const { return (this->_autoindex); }
 
