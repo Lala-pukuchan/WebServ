@@ -9,6 +9,7 @@
 #include <map>
 #include <sys/stat.h>
 #include "ServerConfig.hpp"
+#include "LocationConfig.hpp"
 
 using namespace std;
 
@@ -38,6 +39,8 @@ class ClientRequest
 		vector<string> _allowedMethod;
 		int _maxBodySize;
 
+		LocationConfig _location;
+
 		ServerConfig _server;
 
 		ClientRequest();
@@ -59,6 +62,7 @@ class ClientRequest
 		string getPathInfo() const;
 		bool getIsCgi() const;
 		ServerConfig getServerConfig() const;
+		LocationConfig getLocationConfig() const;
 
 		//for debug
 		void PrintRequest();

@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:13:34 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/18 18:51:31 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/20 16:51:55 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ LocationConfig::LocationConfig(void)
 {
 }
 
-LocationConfig::LocationConfig(const ServerConfig &serverConfig) : _allowedMethods(serverConfig.getAllowedMethods()), _maxBodySize(serverConfig.getMaxBodySize()), _errorPage(serverConfig.getErrorPage()), _indexes(serverConfig.getIndexes()), _autoindex(serverConfig.getAutoindex()), _upload_path(serverConfig.getUploadPath()), _cgi_extension(serverConfig.getCgiExtension()), _return_redirect(serverConfig.getReturnRedirect())
+LocationConfig::LocationConfig(const ServerConfig &serverConfig) : _serverName(serverConfig.getServerName()), _port(serverConfig.getPortString()), _allowedMethods(serverConfig.getAllowedMethods()), _maxBodySize(serverConfig.getMaxBodySize()), _errorPage(serverConfig.getErrorPage()), _indexes(serverConfig.getIndexes()), _autoindex(serverConfig.getAutoindex()), _upload_path(serverConfig.getUploadPath()), _cgi_extension(serverConfig.getCgiExtension()), _return_redirect(serverConfig.getReturnRedirect())
 {
 }
 
@@ -231,6 +231,10 @@ void LocationConfig::PrintLocationConfig()
 	std::cout << std::endl;
 }
 
+std::string LocationConfig::getServerName() const { return (this->_serverName); }
+
+std::string LocationConfig::getPortString() const { return (this->_port); }
+
 std::string LocationConfig::getAlias() const { return (this->_alias); }
 
 bool LocationConfig::getAutoindex() const { return (this->_autoindex); }
@@ -244,3 +248,5 @@ std::vector<std::string> LocationConfig::getIndexes() const { return (this->_ind
 std::map<int, std::string> LocationConfig::getErrorPage() const { return (this->_errorPage); }
 
 std::map<int, std::string> LocationConfig::getReturnRedirect() const { return (this->_return_redirect); }
+
+std::vector<std::string> LocationConfig::getAllowedMethods() const { return (this->_allowedMethods); }

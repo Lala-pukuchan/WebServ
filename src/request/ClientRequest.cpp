@@ -74,12 +74,12 @@ void ClientRequest::setPath()
 	}
 	if (LongestMatchPath != "")
 	{
-		LocationConfig location = locations[LongestMatchPath];
+		_location = locations[LongestMatchPath];
 		// redirectが存在したら
-		if (!(location.getReturnRedirect().empty()))
+		if (!(_location.getReturnRedirect().empty()))
 		{
 			_is_redirect = true;
-			_file_absolute_path = location.getReturnRedirect().begin()->second;
+			_file_absolute_path = _location.getReturnRedirect().begin()->second;
 			return ;
 		}
 		std::string sub_path = _path.substr(LongestMatchPath.length());
@@ -87,20 +87,20 @@ void ClientRequest::setPath()
 		{
 			std::string after_dot = sub_path.substr(sub_path.find("."));
 			_file_ext = after_dot.substr(0, after_dot.find("/"));
-			std::vector<std::string> cgi_extensions = location.getCgiExtension();
-			if (std::find(cgi_extensions.begin(), cgi_extensions.end(), _file_ext) == location.getCgiExtension().end())
+			std::vector<std::string> cgi_extensions = _location.getCgiExtension();
+			if (std::find(cgi_extensions.begin(), cgi_extensions.end(), _file_ext) == _location.getCgiExtension().end())
 			{
-				_file_absolute_path = location.getAlias() + sub_path;
+				_file_absolute_path = _location.getAlias() + sub_path;
 				return ;
 			}
 			_is_cgi = true;
-			_file_absolute_path = location.getAlias() + sub_path.substr(0, sub_path.find("/"));
+			_file_absolute_path = _location.getAlias() + sub_path.substr(0, sub_path.find("/"));
 			if (sub_path.find("/") != std::string::npos)
 				_cgi_path_info = sub_path.substr(sub_path.find("/"));
 			return ;
 		}
 		else
-			_file_absolute_path = location.getAlias() + sub_path;
+			_file_absolute_path = _location.getAlias() + sub_path;
 	}
 }
 
@@ -146,3 +146,5 @@ string ClientRequest::getPathInfo() const { return (_path); }
 bool ClientRequest::getIsCgi() const { return (_is_cgi); }
 
 ServerConfig ClientRequest::getServerConfig() const { return (_server); }
+
+LocationConfig ClientRequest::getLocationConfig() const { return (_location); }
