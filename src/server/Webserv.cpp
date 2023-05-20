@@ -115,6 +115,7 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 	int len;
 
 	while (true) {
+		memset(buffer, 0, BUFSIZE + 1);
 		len = recv(fd, buffer, BUFSIZE, 0);
 		if (len == -1)
 		{
@@ -127,8 +128,8 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 			break;
 		buffer[len] = '\0';
 		strage[fd] += buffer;
-		if (len != BUFSIZE) // end of file or no more data to read
-			break;
+		cerr << "strage is " << strage[fd] << endl;
+		sleep(1);
 	}
 
 	if (len != BUFSIZE) // end of file
