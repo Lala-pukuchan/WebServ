@@ -51,7 +51,7 @@ class ServerResponse
 
 	private:
 		ClientRequest _req;
-		ServerConfig _conf;
+		LocationConfig _conf;
 		string _res;
 		string _method;
 		string _file_true_path;
@@ -80,6 +80,7 @@ class ServerResponse
 		string getErrorBody(int status_code);
 		void getFile();
 		void setFile();
+		void setFile_for_PUT();
 		void deleteFile();
 
 		/* HTTP Method */

@@ -80,27 +80,41 @@ void ClientRequest::setPath()
 		{
 			_is_redirect = true;
 			_file_absolute_path = _location.getReturnRedirect().begin()->second;
-			return ;
-		}
-		std::string sub_path = _path.substr(LongestMatchPath.length());
-		if (sub_path.find(".") != std::string::npos)
-		{
-			std::string after_dot = sub_path.substr(sub_path.find("."));
-			_file_ext = after_dot.substr(0, after_dot.find("/"));
-			std::vector<std::string> cgi_extensions = _location.getCgiExtension();
-			if (std::find(cgi_extensions.begin(), cgi_extensions.end(), _file_ext) == _location.getCgiExtension().end())
-			{
-				_file_absolute_path = _location.getAlias() + sub_path;
-				return ;
-			}
-			_is_cgi = true;
-			_file_absolute_path = _location.getAlias() + sub_path.substr(0, sub_path.find("/"));
-			if (sub_path.find("/") != std::string::npos)
-				_cgi_path_info = sub_path.substr(sub_path.find("/"));
-			return ;
 		}
 		else
-			_file_absolute_path = _location.getAlias() + sub_path;
+		{
+			std::string sub_path = _path.substr(LongestMatchPath.length());
+			if (sub_path.find(".") != std::string::npos)
+			{
+				std::string after_dot = sub_path.substr(sub_path.find("."));
+				_file_ext = after_dot.substr(0, after_dot.find("/"));
+				std::vector<std::string> cgi_extensions = _location.getCgiExtension();
+				if (std::find(cgi_extensions.begin(), cgi_extensions.end(), _file_ext) == _location.getCgiExtension().end())
+					_file_absolute_path = _location.getAlias() + sub_path;
+				else
+				{
+					_is_cgi = true;
+					_file_absolute_path = _location.getAlias() + sub_path.substr(0, sub_path.find("/"));
+					if (sub_path.find("/") != std::string::npos)
+						_cgi_path_info = sub_path.substr(sub_path.find("/"));
+				}
+			}
+			else
+				_file_absolute_path = _location.getAlias() + sub_path;
+		}
+		if (_file_ext == "")
+			return ;
+		for (std::map<std::string, LocationConfig>::iterator it = locations.begin(); it != locations.end(); it++)
+		{
+			std::string location_path = it->first;
+			if (location_path[0] != '*')
+				continue ;
+			if (_file_ext == location_path.substr(1))
+			{
+				_location = locations[location_path];
+				return ;
+			}
+		}
 	}
 }
 

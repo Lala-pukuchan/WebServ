@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:13:34 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/20 16:51:55 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/20 18:43:38 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,3 +250,5 @@ std::map<int, std::string> LocationConfig::getErrorPage() const { return (this->
 std::map<int, std::string> LocationConfig::getReturnRedirect() const { return (this->_return_redirect); }
 
 std::vector<std::string> LocationConfig::getAllowedMethods() const { return (this->_allowedMethods); }
+
+int LocationConfig::getMaxBodySize() const { return (this->_maxBodySize); }

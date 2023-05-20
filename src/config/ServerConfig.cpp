@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:46:18 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/18 18:50:57 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/20 18:42:18 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "LocationConfig.hpp"
 #include "Servers.hpp"
 
-ServerConfig::ServerConfig(void) : _serverName(""), _port(""), _alias(""), _maxBodySize(1), _autoindex(false)
+ServerConfig::ServerConfig(void) : _serverName(""), _port(""), _alias(""), _maxBodySize(10000), _autoindex(false)
 {
 }
 

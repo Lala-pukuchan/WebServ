@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 14:14:53 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/20 16:52:19 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/20 18:43:21 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ class LocationConfig
 		std::map<int, std::string> getErrorPage() const;
 		std::map<int, std::string> getReturnRedirect() const;
 		std::vector<std::string> getAllowedMethods() const;
+		int getMaxBodySize() const;
 
 		//for debug
 		void PrintLocationConfig();

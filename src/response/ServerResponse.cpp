@@ -31,6 +31,7 @@ string ServerResponse::getResponse () const { return (_res); }
 
 void ServerResponse::setResponse(string status_code, string response_message_body, string content_type){
 
+	cout << "status_code: " << status_code << endl;
 	// init
 	string res_content_length = "";
 	string res_content_type = "";
@@ -160,7 +161,7 @@ bool ServerResponse::getDir(){
 		if (!existFile()){
 			isDir = true;
 			cout << "non" << _conf.getAutoindex() << endl;
-			if (1){
+			if (_conf.getAutoindex()){
 				cout << "auto" << endl;
 				DIR* dir;
 				struct dirent* entry;
@@ -182,7 +183,7 @@ bool ServerResponse::getDir(){
 				setResponse("200", content.str(), "text/html");
 				closedir(dir);
 			} else
-				setResponse("403", getErrorBody(403), "");
+				setResponse("404", getErrorBody(404), "");
 		}
 	}
 	return (isDir);
@@ -243,6 +244,24 @@ void ServerResponse::setFile(){
 	ifs.close();
 }
 
+void ServerResponse::setFile_for_PUT(){
+	cerr << "\033[32;1m" << "setFile_for_PUT" << "\033[0m" << endl;
+	bool exist = false;
+	ifstream ifs(_file_true_path);
+	if ((exist = existFile()) && !ifs.is_open()){
+		setResponse("403", "", "");
+	} else {
+		ofstream ofs(_file_true_path, ios::trunc);
+		ofs << _req.getRequestMessageBody();
+		if (!exist)
+			setResponse("201", "create file success", "text/plain");
+		else
+			setResponse("204", "update file success", "text/plain");
+		ofs.close();
+	}
+	ifs.close();
+}
+
 void ServerResponse::deleteFile(){
 	ifstream ifs(_file_true_path);
 	if (!existFile()){
@@ -283,13 +302,13 @@ void ServerResponse::Post(){
 		setFile();
 }
 
-void ServerResponse::Put(){ setFile(); }
+void ServerResponse::Put(){ setFile_for_PUT(); }
 
 void ServerResponse::Delete(){ deleteFile(); }
 
 /* constructor / destructor */
 ServerResponse::ServerResponse (ClientRequest &req) : 
-	_req(req), _conf(req.getServerConfig()), _res(""), _method(req.getMethod()), _file_true_path(req.getFileAbsolutePath()), _file_ext(req.getFileExt()){
+	_req(req), _conf(req.getLocationConfig()), _res(""), _method(req.getMethod()), _file_true_path(req.getFileAbsolutePath()), _file_ext(req.getFileExt()){
 
 	req.PrintRequest();
 	if (checkClientRequest())
