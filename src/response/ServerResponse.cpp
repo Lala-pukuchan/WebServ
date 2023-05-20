@@ -91,7 +91,7 @@ bool ServerResponse::checkMethod() {
 bool ServerResponse::checkContentLength(){
 	if (_req.getContentLength().empty())
 		return (false);
-	return (stoi(_req.getContentLength()) > _req.getMaxBodySize());
+	return (stoi(_req.getContentLength()) > _conf.getMaxBodySize());
 }
 
 bool ServerResponse::checkPath(){ return (_file_true_path.empty()); }
@@ -230,17 +230,14 @@ void ServerResponse::getFile(){
 }
 
 void ServerResponse::setFile(){
-	bool exist = false;
 	ifstream ifs(_file_true_path);
-	if ((exist = existFile()) && !ifs.is_open()){
+	if (!ifs.is_open()){
 		setResponse("403", "", "");
 	} else {
+		_file_true_path += UPLOAD_PAGE;
 		ofstream ofs(_file_true_path, ios::trunc);
 		ofs << _req.getRequestMessageBody();
-		if (!exist)
-			setResponse("201", "create file success", "text/plain");
-		else
-			setResponse("204", "update file success", "text/plain");
+		setResponse("201", "File Created.", "text/plain");
 		ofs.close();
 	}
 	ifs.close();

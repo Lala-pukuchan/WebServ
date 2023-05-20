@@ -7,6 +7,7 @@
 
 #define DEFAULT_ERROR_PAGE "./docs/error_page/default_error.html"
 #define DEFAULT_INDEX_PAGE "index.html"
+#define UPLOAD_PAGE "upload.txt"
 
 /* setting */
 // mime-type

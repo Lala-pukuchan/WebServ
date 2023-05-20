@@ -1,0 +1,20 @@
+POST /upload/ HTTP/1.1
+Host: localhost:4242
+User-Agent: curl/7.54.0
+Accept: */*
+Content-Length: 9
+Content-Type: application/x-www-form-urlencoded
+
+* upload completely sent off: 9 out of 9 bytes
+HTTP/1.1 201 Created
+Server: Webserv/1.0
+Date: Sat, 20 May 2023 08:38:54 GMT
+Content-Type: text/plain
+Content-Length: 7
+Connection: close
+
+cat docs/upload/upload.txt 
+Please upload this file.
+
+c1r14s2% cat uploaded
+File Created.% 

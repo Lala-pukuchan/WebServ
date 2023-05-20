@@ -1,4 +1,5 @@
 # テスト
+--resolve webserv1:4242:127.0.0.1
 ## GET
 |  結果  | Configパス| ディレクトリ  |  ファイル  |  パス  |
 | ---- | ---- | ---- | ---- | ---- |
@@ -15,10 +16,9 @@
 |  4  |  off  |  無  |  `curl -v http://webserv1:4242/autoindex3/`  |
 
 ## POST
-- .png
-|  結果  | ディレクトリ有無  |  ファイル有無  |  データ形式  |  パス  |
+|  結果  | ディレクトリ有無  |  ファイル有無  |  ファイル形式  |  パス  |
 | ---- | ---- | ---- | ---- | ---- |
-|  1  |  有  |  有  |  ファイル  | `curl -X POST -F "file=@./a.txt" http://webserv1:4242/upload/`  |
+|  1  |  有  |  有  |  .txt  | `curl -v -X POST --data-binary '@./docs/upload.txt' http://localhost:4242/upload/`  |
 
 ## DELETE
 
