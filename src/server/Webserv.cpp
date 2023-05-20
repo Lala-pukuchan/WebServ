@@ -128,10 +128,9 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 			break;
 		buffer[len] = '\0';
 		strage[fd] += buffer;
-		cerr << "strage is " << strage[fd] << endl;
 		usleep(100);
 	}
-
+	strage[fd] += ('\0' + 26);
 	if (len != BUFSIZE) // end of file
 	{
 		FD_CLR(fd, masterRecvFds);
