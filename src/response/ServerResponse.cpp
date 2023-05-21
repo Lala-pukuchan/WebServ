@@ -283,10 +283,7 @@ void ServerResponse::deleteFile(){
 /* HTTP Method */
 void ServerResponse::Get(){
 	if (_req.getIsCgi()){
-		if (!existFile())
-			setResponse("404", getErrorBody(404), "");
-		else
-			getCgiResults();
+		getCgiResults();
 	} else if (_conf.getReturnRedirect().size() != 0) {
 		setResponse("301", "", "");
 	} else {
@@ -296,10 +293,10 @@ void ServerResponse::Get(){
 }
 
 void ServerResponse::Post(){
-	if (_req.getIsCgi())
+	//if (_req.getIsCgi())
 		getCgiResults();
-	else
-		setFile();
+	//else
+	//	setFile();
 }
 
 void ServerResponse::Put(){ setFile_for_PUT(); }

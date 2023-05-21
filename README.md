@@ -35,6 +35,12 @@
 ## content length
 |  結果  |  パス  |
 | ---- | ---- |
-|  10  |  `curl -v --resolve webserv1:4242:127.0.0.1 -X POST --data-binary '@./docs/upload.txt' http://localhost:4242/upload2/`  |
+|  7  |  `curl -v --resolve webserv1:4242:127.0.0.1 -X POST --data-binary '@./docs/upload.txt' http://localhost:4242/upload2/`  |
 
 ## cgi
+|  結果  | メソッド |  パス  |
+| ---- | ---- | ---- |
+|  8  | GET |  `curl -v --resolve webserv1:4242:127.0.0.1 http://localhost:4242/test.cgi`  |
+|  9  | POST |  `curl -v --resolve webserv1:4242:127.0.0.1 -X POST -d 'abc' http://localhost:4242/test.cgi`  |
+
+
