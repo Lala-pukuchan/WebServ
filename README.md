@@ -28,11 +28,9 @@
 |  2  |  有  |  無  | `curl -v --resolve webserv1:4242:127.0.0.1 -X DELETE http://localhost:4242/dir/no.txt`  |
 
 ## allow methods
-- default.confに指定されたメソッドが通ること
-
-|  結果  |  メソッド  |  パス  |
-| ---- | ---- | ---- |
-|  10  |  *  |  *  |
+|  結果  |  パス  |
+| ---- | ---- |
+|  10  |  `curl -v --resolve webserv1:4242:127.0.0.1 -X PUT http://localhost:4242/`  |
 
 ## content length
 
