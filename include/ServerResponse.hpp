@@ -37,6 +37,7 @@ const stringpair_t status[] = {
   stringpair_t("200", "OK"),
   stringpair_t("201", "Created"),
   stringpair_t("204", "No Content"),
+  stringpair_t("301", "Moved Permanently"),
   stringpair_t("403", "Forbidden"),
   stringpair_t("404", "Not Found"),
   stringpair_t("405", "Method Not Allowed"),

@@ -31,7 +31,6 @@ string ServerResponse::getResponse () const { return (_res); }
 
 void ServerResponse::setResponse(string status_code, string response_message_body, string content_type){
 
-	cout << "status_code: " << status_code << endl;
 	// init
 	string res_content_length = "";
 	string res_content_type = "";
@@ -49,9 +48,10 @@ void ServerResponse::setResponse(string status_code, string response_message_bod
 			last_modified_time = "Last-Modified: " + getLastModifiedTime(_file_true_path) + "\r\n";
 	} else
 		res_content_type = "Content-Type: " + mime_mapper.at(".html") + "\r\n";
+	
 	res_response_message_body = response_message_body;
-	if (status_code == "405")
-	{
+
+	if (status_code == "405"){
 		res_allow = "Allow: ";
 		for (int i = 0; i < static_cast<int>(_conf.getAllowedMethods().size()); i++){
 			if (i != 0)
@@ -60,10 +60,14 @@ void ServerResponse::setResponse(string status_code, string response_message_bod
     	}
 		res_allow += "\r\n";
 	}
-	if (status_code == "301")
-		res_location = "Location: " + _conf.getReturnRedirect().at(301) + "\r\n";
+	if (status_code == "301"){
+		try {
+			res_location = "Location: " + _conf.getReturnRedirect().at(301) + "\r\n";
+		} catch (const exception& e){
+			cerr << "Failt to take redirection url. " << e.what() << endl;
+		}
+	}
 
-	// create res
 	ostringstream os;
 	os << 
 		"HTTP/1.1 " << status_code << " " << status_mapper.at(status_code) << "\r\n"
@@ -99,11 +103,11 @@ bool ServerResponse::checkPath(){ return (_file_true_path.empty()); }
 
 bool ServerResponse::checkClientRequest() {
 	if (checkMethod())
-		setResponse("405", "", "");
+		setResponse("405", getErrorBody(405), "");
 	else if (checkContentLength())
-		setResponse("413", "", "");
+		setResponse("413", getErrorBody(413), "");
 	else if (checkPath())
-		setResponse("404", "", "");
+		setResponse("404", getErrorBody(404), "");
 	if (!_res.empty())
 		return (true);
 	return (false);
@@ -117,7 +121,7 @@ void ServerResponse::getCgiResults(){
 	if ((cgiStatus = cgi.getStatus()) == "200")
 		_res = cgi.getResult();
 	else
-		setResponse(cgiStatus, "", "");
+		setResponse(cgiStatus, getErrorBody(stoi(cgiStatus)), "");
 }
 
 /* File Handler */
@@ -170,7 +174,7 @@ bool ServerResponse::getDir(){
 				dir = opendir(dirPath);
 				delete [] dirPath;
 				if (!dir) {
-					setResponse("404", "", "");
+					setResponse("404", getErrorBody(404), "");
 					return (isDir);
 				}
 				stringstream content;
@@ -206,7 +210,6 @@ string ServerResponse::getErrorBody(int status_code){
 		content = buffer.str();
 	}
 	ifs.close();
-	cout << "content" << content << endl;
 	return (content);
 }
 
@@ -245,11 +248,10 @@ void ServerResponse::setFile(){
 }
 
 void ServerResponse::setFile_for_PUT(){
-	cerr << "\033[32;1m" << "setFile_for_PUT" << "\033[0m" << endl;
 	bool exist = false;
 	ifstream ifs(_file_true_path);
 	if ((exist = existFile()) && !ifs.is_open()){
-		setResponse("403", "", "");
+		setResponse("403", getErrorBody(403), "");
 	} else {
 		ofstream ofs(_file_true_path, ios::trunc);
 		ofs << _req.getRequestMessageBody();
@@ -265,16 +267,16 @@ void ServerResponse::setFile_for_PUT(){
 void ServerResponse::deleteFile(){
 	ifstream ifs(_file_true_path);
 	if (!existFile()){
-		setResponse("404", "", "");
+		setResponse("404", getErrorBody(404), "");
 	} else {
 		try {
 			if (!remove(_file_true_path.c_str()))
-				setResponse("200", "", "");
+				setResponse("204", "", "");
 			else
-				setResponse("403", "", "");
+				setResponse("403", getErrorBody(403), "");
 		} catch (const exception& e) {
 			cout << e.what() << endl;
-			setResponse("500", "", "");
+			setResponse("500", getErrorBody(500), "");
 		}
 	}
 	ifs.close();
@@ -283,12 +285,9 @@ void ServerResponse::deleteFile(){
 /* HTTP Method */
 void ServerResponse::Get(){
 	if (_req.getIsCgi()){
-		if (!existFile())
-			setResponse("404", "", "");
-		else
-			getCgiResults();
+		getCgiResults();
 	} else if (_conf.getReturnRedirect().size() != 0) {
-		setResponse("301", "", "");
+		setResponse("301", getErrorBody(301), "");
 	} else {
 		if (!getDir())
 			getFile();

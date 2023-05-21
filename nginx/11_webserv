@@ -1,0 +1,17 @@
+HTTP/1.1 404 Not Found
+Server: Webserv/1.0
+Date: Sun, 21 May 2023 10:44:30 GMT
+Content-Type: text/html
+Content-Length: 189
+Connection: close
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>404 Not Found</title>
+</head>
+<body>
+    <h1>404 Not Found</h1>
+    <p>The requested resource could not be found on this server.</p>
+</body>
+</html>
