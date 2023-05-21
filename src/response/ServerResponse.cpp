@@ -31,7 +31,6 @@ string ServerResponse::getResponse () const { return (_res); }
 
 void ServerResponse::setResponse(string status_code, string response_message_body, string content_type){
 
-	cout << "status_code: " << status_code << endl;
 	// init
 	string res_content_length = "";
 	string res_content_type = "";
@@ -49,9 +48,10 @@ void ServerResponse::setResponse(string status_code, string response_message_bod
 			last_modified_time = "Last-Modified: " + getLastModifiedTime(_file_true_path) + "\r\n";
 	} else
 		res_content_type = "Content-Type: " + mime_mapper.at(".html") + "\r\n";
+	
 	res_response_message_body = response_message_body;
-	if (status_code == "405")
-	{
+
+	if (status_code == "405"){
 		res_allow = "Allow: ";
 		for (int i = 0; i < static_cast<int>(_conf.getAllowedMethods().size()); i++){
 			if (i != 0)
@@ -60,10 +60,14 @@ void ServerResponse::setResponse(string status_code, string response_message_bod
     	}
 		res_allow += "\r\n";
 	}
-	if (status_code == "301")
-		res_location = "Location: " + _conf.getReturnRedirect().at(301) + "\r\n";
+	if (status_code == "301"){
+		try {
+			res_location = "Location: " + _conf.getReturnRedirect().at(301) + "\r\n";
+		} catch (const exception& e){
+			cerr << "Failt to take redirection url. " << e.what() << endl;
+		}
+	}
 
-	// create res
 	ostringstream os;
 	os << 
 		"HTTP/1.1 " << status_code << " " << status_mapper.at(status_code) << "\r\n"
@@ -206,7 +210,6 @@ string ServerResponse::getErrorBody(int status_code){
 		content = buffer.str();
 	}
 	ifs.close();
-	cout << "content" << content << endl;
 	return (content);
 }
 
@@ -245,7 +248,6 @@ void ServerResponse::setFile(){
 }
 
 void ServerResponse::setFile_for_PUT(){
-	cerr << "\033[32;1m" << "setFile_for_PUT" << "\033[0m" << endl;
 	bool exist = false;
 	ifstream ifs(_file_true_path);
 	if ((exist = existFile()) && !ifs.is_open()){
@@ -285,7 +287,7 @@ void ServerResponse::Get(){
 	if (_req.getIsCgi()){
 		getCgiResults();
 	} else if (_conf.getReturnRedirect().size() != 0) {
-		setResponse("301", "", "");
+		setResponse("301", getErrorBody(301), "");
 	} else {
 		if (!getDir())
 			getFile();
@@ -293,10 +295,10 @@ void ServerResponse::Get(){
 }
 
 void ServerResponse::Post(){
-	//if (_req.getIsCgi())
+	if (_req.getIsCgi())
 		getCgiResults();
-	//else
-	//	setFile();
+	else
+		setFile();
 }
 
 void ServerResponse::Put(){ setFile_for_PUT(); }
