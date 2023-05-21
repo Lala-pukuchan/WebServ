@@ -33,5 +33,8 @@
 |  10  |  `curl -v --resolve webserv1:4242:127.0.0.1 -X PUT http://localhost:4242/`  |
 
 ## content length
+|  結果  |  パス  |
+| ---- | ---- |
+|  10  |  `curl -v --resolve webserv1:4242:127.0.0.1 -X POST --data-binary '@./docs/upload.txt' http://localhost:4242/upload2/`  |
 
 ## cgi
