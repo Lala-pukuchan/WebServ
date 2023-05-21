@@ -1,0 +1,10 @@
+$ ls docs/dir
+delete.txt
+
+HTTP/1.1 204 No Content
+Server: Webserv/1.0
+Date: Sun, 21 May 2023 09:37:22 GMT
+Content-Type: text/html
+Connection: close
+
+$ ls docs/dir

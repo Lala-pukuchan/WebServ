@@ -99,11 +99,11 @@ bool ServerResponse::checkPath(){ return (_file_true_path.empty()); }
 
 bool ServerResponse::checkClientRequest() {
 	if (checkMethod())
-		setResponse("405", "", "");
+		setResponse("405", getErrorBody(405), "");
 	else if (checkContentLength())
-		setResponse("413", "", "");
+		setResponse("413", getErrorBody(413), "");
 	else if (checkPath())
-		setResponse("404", "", "");
+		setResponse("404", getErrorBody(404), "");
 	if (!_res.empty())
 		return (true);
 	return (false);
@@ -117,7 +117,7 @@ void ServerResponse::getCgiResults(){
 	if ((cgiStatus = cgi.getStatus()) == "200")
 		_res = cgi.getResult();
 	else
-		setResponse(cgiStatus, "", "");
+		setResponse(cgiStatus, getErrorBody(stoi(cgiStatus)), "");
 }
 
 /* File Handler */
@@ -170,7 +170,7 @@ bool ServerResponse::getDir(){
 				dir = opendir(dirPath);
 				delete [] dirPath;
 				if (!dir) {
-					setResponse("404", "", "");
+					setResponse("404", getErrorBody(404), "");
 					return (isDir);
 				}
 				stringstream content;
@@ -249,7 +249,7 @@ void ServerResponse::setFile_for_PUT(){
 	bool exist = false;
 	ifstream ifs(_file_true_path);
 	if ((exist = existFile()) && !ifs.is_open()){
-		setResponse("403", "", "");
+		setResponse("403", getErrorBody(403), "");
 	} else {
 		ofstream ofs(_file_true_path, ios::trunc);
 		ofs << _req.getRequestMessageBody();
@@ -265,16 +265,16 @@ void ServerResponse::setFile_for_PUT(){
 void ServerResponse::deleteFile(){
 	ifstream ifs(_file_true_path);
 	if (!existFile()){
-		setResponse("404", "", "");
+		setResponse("404", getErrorBody(404), "");
 	} else {
 		try {
 			if (!remove(_file_true_path.c_str()))
-				setResponse("200", "", "");
+				setResponse("204", "", "");
 			else
-				setResponse("403", "", "");
+				setResponse("403", getErrorBody(403), "");
 		} catch (const exception& e) {
 			cout << e.what() << endl;
-			setResponse("500", "", "");
+			setResponse("500", getErrorBody(500), "");
 		}
 	}
 	ifs.close();
@@ -284,7 +284,7 @@ void ServerResponse::deleteFile(){
 void ServerResponse::Get(){
 	if (_req.getIsCgi()){
 		if (!existFile())
-			setResponse("404", "", "");
+			setResponse("404", getErrorBody(404), "");
 		else
 			getCgiResults();
 	} else if (_conf.getReturnRedirect().size() != 0) {

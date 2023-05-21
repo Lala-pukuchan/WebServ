@@ -24,7 +24,8 @@
 ## DELETE
 |  結果  | ディレクトリ有無  |  ファイル有無  |  パス  |
 | ---- | ---- | ---- | ---- |
-|  5  |  有  |  無  | `curl -v --resolve webserv1:4242:127.0.0.1 -X DELETE http://localhost:4242/upload/delete.txt`  |
+|  6  |  有  |  有  | `curl -v --resolve webserv1:4242:127.0.0.1 -X DELETE http://localhost:4242/dir/delete.txt`  |
+|  2  |  有  |  無  | `curl -v --resolve webserv1:4242:127.0.0.1 -X DELETE http://localhost:4242/dir/no.txt`  |
 
 ## allow methods
 - default.confに指定されたメソッドが通ること
