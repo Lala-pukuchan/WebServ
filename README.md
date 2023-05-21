@@ -3,8 +3,8 @@
 |  結果  | Configパス| ディレクトリ  |  ファイル  |  パス  |
 | ---- | ---- | ---- | ---- | ---- |
 |  1  |  有  |  有  |  有  |  `curl -v --resolve webserv1:4242:127.0.0.1 http://webserv1:4242/index.html`  |
-|  2  |  有  |  有  |  無  |  `curl -v --resolve webserv1:4242:127.0.0.1 http://webserv1:4242/autoindex/file.txt`  |
-|  2  |  有  |  有  |  権限無  |  `curl -v --resolve webserv1:4242:127.0.0.1 http://webserv1:4242/autoindex/no_file.txt`  |
+|  2  |  有  |  有  |  無  |  `curl -v --resolve webserv1:4242:127.0.0.1 http://webserv1:4242/no_such_file.txt`  |
+|  2  |  有  |  有  |  権限無  |  `curl -v --resolve webserv1:4242:127.0.0.1 http://webserv1:4242/no_right_file.txt`  |
 
 ## autoindex
 |  結果  |  autoindex  |  index.html  |  パス  |
