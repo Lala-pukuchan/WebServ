@@ -113,6 +113,7 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 {
 	char buffer[BUFSIZE + 1];
 	int len;
+	static map<int, int> checkedSize;
 
 	len = recv(fd, buffer, BUFSIZE, 0);
 	if (len == -1)
@@ -124,14 +125,14 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 		return ;
 	buffer[len] = '\0';
 	strage[fd] += buffer;
-	// strage[fd] += ('\0' + 26); //TODO:最後だけ加える
+	// strage[fd] += ('\0' + 26); //TODO:最後だけ加える??
 	const unsigned long pos = strage[fd].find("\r\n\r\n");
 	if (pos == string::npos)
 		return ;
-	cout << "=================strage====================" << endl;
-	cout << "pos is" << pos << endl;
-	cout << strage[fd] << endl;
-	cout << "===========================================" << endl;
+	// cout << "=================strage====================" << endl;
+	// cout << "pos is" << pos << endl;
+	// cout << strage[fd] << endl;
+	// cout << "===========================================" << endl;
 	ClientRequest req(strage[fd]);
 	if (!req.getIsContent() && req.getTransferEncoding() != "chunked")
 	{
@@ -141,22 +142,45 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 	}
 	if (req.getIsContent())
 	{
-		if (strage[fd].size() == stoul(req.getContentLength()) + pos + 1)
+		if (strage[fd].size() == stoul(req.getContentLength()) + pos + 4)
 		{
 			FD_CLR(fd, masterRecvFds);
 			FD_SET(fd, masterSendFds);
-			cout << strage[fd].size() - (pos + 1) << endl;
-			cout << req.getContentLength() << endl;
+			// cout << strage[fd].size() - (pos + 4) << endl;
+			// cout << req.getContentLength() << endl;
 			return ;
 		}
-		cout << "size is " << strage[fd].size() - (pos + 1) << endl;
-		cout << "acctually size is " << req.getContentLength() << endl;
+		// cout << "pos is " << pos << endl;
+		// cout << 
+		// cout << "size is " << strage[fd].size() - (pos + 4) << endl;
+		// cout << "acctually size is " << req.getContentLength() << endl;
 	}
 	if (req.getTransferEncoding() == "chunked") //TODO:まだ
 	{
-		FD_CLR(fd, masterRecvFds);
-		FD_SET(fd, masterSendFds);
-		return ;
+		// if (strage[fd].find("\r\n\r\n\0") != string::npos)
+		// {
+		// 	cout << "nothing" << endl;
+		// 	FD_CLR(fd, masterRecvFds);
+		// 	FD_SET(fd, masterSendFds);
+		// 	return ;
+		// }
+		string temp;
+		// cout << "checked size is " << checkedSize[fd] << endl;
+		temp.assign(strage[fd].substr(max(checkedSize[fd], 0)));
+		// cout << "temp size is" << temp.size() << endl;
+		// cout << "*******************temp*********************" << endl;
+		// cout << "temp is " << temp << endl;
+		// cout << "****************************************" << endl;
+		if (temp.find("\r\n0\r\n") != string::npos)
+		{
+			FD_CLR(fd, masterRecvFds);
+			FD_SET(fd, masterSendFds);
+			checkedSize[fd] = 0;
+			return ;
+		}
+		// cout << "done" << endl;
+		int size = temp.size();
+		checkedSize[fd] += max(size - 10, 0);
 	}
 }
 
