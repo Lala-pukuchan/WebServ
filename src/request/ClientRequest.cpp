@@ -5,6 +5,11 @@ ClientRequest::ClientRequest () : _is_cgi(false), _is_redirect(false)
 {
 }
 
+ClientRequest::ClientRequest(string requestMessage) : _is_cgi(false), _is_redirect(false)
+{
+	readClientRequest(requestMessage);
+}
+
 ClientRequest::ClientRequest(string requestMessage, ServerConfig Server) : _is_cgi(false), _is_redirect(false)
 {
 	_server = Server;
@@ -35,6 +40,8 @@ void ClientRequest::readClientRequest(std::string requestMessage)
 	iss_second_line >> tmp >> value;
 	_server_name = value.substr(0, value.find(":"));
 	_port = value.substr(value.find(":") + 1);
+	_is_content = false;
+	_transfer_encoding = "";
 	while (1)
 	{
 		string new_line;
@@ -45,9 +52,14 @@ void ClientRequest::readClientRequest(std::string requestMessage)
 		if (key.empty())
 			break;
 		if (key == "Content-Length:")
+		{
 			_contentLength = value;
+			_is_content = true;
+		}
 		if (key == "Content-Type:")
 			_content_type = value;
+		if (key == "Transfer-Encoding:")
+			_transfer_encoding = value;
 	}
 	// get message body
 	for (std::string line; getline(iss, line);)
@@ -144,6 +156,10 @@ ClientRequest::~ClientRequest () {}
 string ClientRequest::getMethod () const { return (_method); }
 
 string ClientRequest::getContentLength () const { return (_contentLength); }
+
+bool ClientRequest::getIsContent() const { return (_is_content); }
+
+string ClientRequest::getTransferEncoding() const { return (_transfer_encoding); }
 
 string ClientRequest::getFileAbsolutePath() const { return (_file_absolute_path); }
 
