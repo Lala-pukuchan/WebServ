@@ -114,30 +114,49 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 	char buffer[BUFSIZE + 1];
 	int len;
 
-	while (true) {
-		memset(buffer, 0, BUFSIZE + 1);
-		len = recv(fd, buffer, BUFSIZE, 0);
-		if (len == -1)
-		{
-			if (errno == EWOULDBLOCK || errno == EAGAIN)
-				break;
-			perror("recv");
-			return ;
-		}
-		else if (len == 0) // connection closed
-			break;
-		buffer[len] = '\0';
-		strage[fd] += buffer;
-		usleep(100);
+	len = recv(fd, buffer, BUFSIZE, 0);
+	if (len == -1)
+	{
+		perror("recv");
+		return ;
 	}
-	strage[fd] += ('\0' + 26);
-	if (len != BUFSIZE) // end of file
+	else if (len == 0) // connection closed
+		return ;
+	buffer[len] = '\0';
+	strage[fd] += buffer;
+	// strage[fd] += ('\0' + 26); //TODO:最後だけ加える
+	const unsigned long pos = strage[fd].find("\r\n\r\n");
+	if (pos == string::npos)
+		return ;
+	cout << "=================strage====================" << endl;
+	cout << "pos is" << pos << endl;
+	cout << strage[fd] << endl;
+	cout << "===========================================" << endl;
+	ClientRequest req(strage[fd]);
+	if (!req.getIsContent() && req.getTransferEncoding() != "chunked")
 	{
 		FD_CLR(fd, masterRecvFds);
 		FD_SET(fd, masterSendFds);
-		#ifdef DEBUG
-		cout << "buffer is " << strage[fd] << endl;
-		#endif
+		return ;
+	}
+	if (req.getIsContent())
+	{
+		if (strage[fd].size() == stoul(req.getContentLength()) + pos + 1)
+		{
+			FD_CLR(fd, masterRecvFds);
+			FD_SET(fd, masterSendFds);
+			cout << strage[fd].size() - (pos + 1) << endl;
+			cout << req.getContentLength() << endl;
+			return ;
+		}
+		cout << "size is " << strage[fd].size() - (pos + 1) << endl;
+		cout << "acctually size is " << req.getContentLength() << endl;
+	}
+	if (req.getTransferEncoding() == "chunked") //TODO:まだ
+	{
+		FD_CLR(fd, masterRecvFds);
+		FD_SET(fd, masterSendFds);
+		return ;
 	}
 }
 
