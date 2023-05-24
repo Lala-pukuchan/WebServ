@@ -164,9 +164,9 @@ bool ServerResponse::getDir(){
 
 		if (!existFile()){
 			isDir = true;
-			cout << "non" << _conf.getAutoindex() << endl;
+			// cout << "non" << _conf.getAutoindex() << endl;
 			if (_conf.getAutoindex()){
-				cout << "auto" << endl;
+				// cout << "auto" << endl;
 				DIR* dir;
 				struct dirent* entry;
 				char* dirPath = new char[bkDir.length() + 1];

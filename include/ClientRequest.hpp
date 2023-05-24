@@ -20,6 +20,8 @@ class ClientRequest
 		string _method;
 		string _contentLength;
 		// 見つからなかったらよしなに対応
+		bool _is_content;
+		string _transfer_encoding;
 		string _file_absolute_path;
 
 		string _file_ext;
@@ -49,11 +51,14 @@ class ClientRequest
 
 	public:
 		ClientRequest (string requestMessage, ServerConfig Server);
+		ClientRequest (string requestMessage);
 		~ClientRequest ();
 
 		// getter
 		string getMethod () const;
 		string getContentLength () const;
+		bool getIsContent() const;
+		string getTransferEncoding () const;
 		string getFileAbsolutePath() const;
 		string getFileExt() const;
 		vector<string> getAllowedMethod () const;
