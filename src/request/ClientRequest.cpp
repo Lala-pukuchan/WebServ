@@ -111,11 +111,16 @@ void ClientRequest::setPath()
 				std::string after_dot = sub_path.substr(sub_path.find("."));
 				_file_ext = after_dot.substr(0, after_dot.find("/"));
 				std::vector<std::string> cgi_extensions = _location.getCgiExtension();
-				if (std::find(cgi_extensions.begin(), cgi_extensions.end(), _file_ext) == _location.getCgiExtension().end())
+				//print cgi_extensions
+				for (std::vector<std::string>::iterator it = cgi_extensions.begin(); it != cgi_extensions.end(); it++)
+				{
+					if (*it == _file_ext)
+						_is_cgi = true;
+				}
+				if (_is_cgi)
 					_file_absolute_path = _location.getAlias() + sub_path;
 				else
 				{
-					_is_cgi = true;
 					_file_absolute_path = _location.getAlias() + sub_path.substr(0, sub_path.find("/"));
 					if (sub_path.find("/") != std::string::npos)
 						_cgi_path_info = sub_path.substr(sub_path.find("/"));
