@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:13:34 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/20 19:42:32 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/25 14:37:33 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,8 @@ void LocationConfig::setLocationConfig(const std::vector<std::string> &configStr
 		else if (key == "alias")
 		{
 			this->_alias = getOneValue(line, pos);
-			if (this->_alias[this->_alias.size() - 1] == '/')
-				this->_alias = this->_alias.substr(0, this->_alias.size() - 1);
+			if (this->_alias[this->_alias.size() - 1] != '/')
+				this->_alias = this->_alias + "/";
 		}
 		else if (key == "allow_methods")
 			setAllowedMethods(line, pos);

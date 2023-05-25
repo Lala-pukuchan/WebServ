@@ -1,6 +1,13 @@
 #include "ClientRequest.hpp"
 #include "ServerConfig.hpp"
 
+# define RE "\033[31m"
+# define GR "\033[32m"
+# define YE "\033[33m"
+# define CY "\033[36m"
+# define RC "\033[0m"
+# define BOLD "\033[1m"
+
 ClientRequest::ClientRequest () : _is_cgi(false), _is_redirect(false)
 {
 }

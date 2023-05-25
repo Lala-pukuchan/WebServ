@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:46:18 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/20 18:42:18 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/25 14:38:18 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,8 @@ void ServerConfig::setServerConfig(const std::vector<std::string> &configStrings
 		else if (key == "alias")
 		{
 			this->_alias = getOneValue(line, pos);
-			if (this->_alias[this->_alias.size() - 1] == '/')
-				this->_alias = this->_alias.substr(0, this->_alias.size() - 1);
+			if (this->_alias[this->_alias.size() - 1] != '/')
+				this->_alias = this->_alias + "/";
 		}
 		else if (key == "server_name")
 			this->_serverName = getOneValue(line, pos);
