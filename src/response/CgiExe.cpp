@@ -77,7 +77,10 @@ void CgiExe::exe (){
 		close(fd[1]);
 		
 		// exe
-		execve(_req.getFileAbsolutePath().c_str(), _arg, _env);
+		if (_req.getLocationConfig().getCgiPath() != "")
+			execve(_req.getLocationConfig().getCgiPath().c_str(), _arg, _env);
+		else if (_req.getFileAbsolutePath() != "")
+			execve(_req.getFileAbsolutePath().c_str(), _arg, _env);
 
 		// exe error
 		cout << "Failed to exe." << endl;

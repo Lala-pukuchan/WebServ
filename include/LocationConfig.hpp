@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 14:14:53 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/13 18:49:17 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/05/20 19:42:10 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,9 @@ class ServerConfig;
 class LocationConfig
 {
 	private:
+		std::string _serverName;
+		std::string _port;
+
 		std::string _alias;
 		std::string _cgi_path;
 	
@@ -46,13 +49,21 @@ class LocationConfig
 		
 		void setLocationConfig(const std::vector<std::string> &configStrings, size_t &pos, const std::string &locationName);
 		void setAllowedMethods(const std::string &line, const size_t &pos);
+
+
+		//getter
+		std::string getPortString() const;
+		std::string getServerName() const;
 		std::string getAlias() const;
+		std::string getCgiPath() const;
 		bool getAutoindex() const;
 		std::string getUploadPath() const;
 		std::vector<std::string> getCgiExtension() const;
 		std::vector<std::string> getIndexes() const;
 		std::map<int, std::string> getErrorPage() const;
 		std::map<int, std::string> getReturnRedirect() const;
+		std::vector<std::string> getAllowedMethods() const;
+		int getMaxBodySize() const;
 
 		//for debug
 		void PrintLocationConfig();

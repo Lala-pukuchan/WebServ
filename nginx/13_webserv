@@ -1,0 +1,18 @@
+HTTP/1.1 301 Moved Permanently
+Server: Webserv/1.0
+Date: Sun, 21 May 2023 11:11:23 GMT
+Location: http://google.com
+Content-Type: text/html
+Content-Length: 164
+Connection: close
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Default Error</title>
+</head>
+<body>
+    <h1>Default Error</h1>
+    <p>This is the default error page.</p>
+</body>
+</html>

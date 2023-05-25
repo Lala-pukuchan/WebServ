@@ -9,6 +9,7 @@
 #include <map>
 #include <sys/stat.h>
 #include "ServerConfig.hpp"
+#include "LocationConfig.hpp"
 
 using namespace std;
 
@@ -19,6 +20,8 @@ class ClientRequest
 		string _method;
 		string _contentLength;
 		// 見つからなかったらよしなに対応
+		bool _is_content;
+		string _transfer_encoding;
 		string _file_absolute_path;
 
 		string _file_ext;
@@ -38,6 +41,8 @@ class ClientRequest
 		vector<string> _allowedMethod;
 		int _maxBodySize;
 
+		LocationConfig _location;
+
 		ServerConfig _server;
 
 		ClientRequest();
@@ -46,11 +51,14 @@ class ClientRequest
 
 	public:
 		ClientRequest (string requestMessage, ServerConfig Server);
+		ClientRequest (string requestMessage);
 		~ClientRequest ();
 
 		// getter
 		string getMethod () const;
 		string getContentLength () const;
+		bool getIsContent() const;
+		string getTransferEncoding () const;
 		string getFileAbsolutePath() const;
 		string getFileExt() const;
 		vector<string> getAllowedMethod () const;
@@ -59,6 +67,7 @@ class ClientRequest
 		string getPathInfo() const;
 		bool getIsCgi() const;
 		ServerConfig getServerConfig() const;
+		LocationConfig getLocationConfig() const;
 
 		//for debug
 		void PrintRequest();

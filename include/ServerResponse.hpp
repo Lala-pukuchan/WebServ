@@ -3,6 +3,11 @@
 
 #include "ClientRequest.hpp"
 #include <dirent.h>
+#include <ctime>
+
+#define DEFAULT_ERROR_PAGE "./docs/error_page/default_error.html"
+#define DEFAULT_INDEX_PAGE "index.html"
+#define UPLOAD_PAGE "upload"
 
 /* setting */
 // mime-type
@@ -32,6 +37,7 @@ const stringpair_t status[] = {
   stringpair_t("200", "OK"),
   stringpair_t("201", "Created"),
   stringpair_t("204", "No Content"),
+  stringpair_t("301", "Moved Permanently"),
   stringpair_t("403", "Forbidden"),
   stringpair_t("404", "Not Found"),
   stringpair_t("405", "Method Not Allowed"),
@@ -46,11 +52,15 @@ class ServerResponse
 
 	private:
 		ClientRequest _req;
-		ServerConfig _conf;
+		LocationConfig _conf;
 		string _res;
 		string _method;
 		string _file_true_path;
 		string _file_ext;
+
+		/* get time for res */
+		string getCurrentTime();
+		string getLastModifiedTime(const string& filePath);
 
 		/* response getter / setter */
 		void setResponse(string status_code, string response_message_body, string content_type);
@@ -68,8 +78,10 @@ class ServerResponse
 		bool existFile();
 		void existIndexFile();
 		bool getDir();
+		string getErrorBody(int status_code);
 		void getFile();
 		void setFile();
+		void setFile_for_PUT();
 		void deleteFile();
 
 		/* HTTP Method */
