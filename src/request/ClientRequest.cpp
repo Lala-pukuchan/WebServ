@@ -38,7 +38,7 @@ void ClientRequest::readClientRequest(std::string requestMessage)
 	iss_first_line >> _method;
 	// get path_info
 	iss_first_line >> _path;
-	if (_path[_path.size() - 1] == '/')
+	if (_path[_path.size() - 1] == '/' && _path.size() > 1)
 		_path = _path.substr(0, _path.size() - 1);
 	// get version
 	iss_first_line >> _version;
