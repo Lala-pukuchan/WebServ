@@ -38,6 +38,8 @@ void ClientRequest::readClientRequest(std::string requestMessage)
 	iss_first_line >> _method;
 	// get path_info
 	iss_first_line >> _path;
+	if (_path[_path.size() - 1] == '/')
+		_path = _path.substr(0, _path.size() - 1);
 	// get version
 	iss_first_line >> _version;
 
@@ -94,6 +96,7 @@ void ClientRequest::setPath()
 	if (LongestMatchPath != "")
 	{
 		_location = locations[LongestMatchPath];
+		std::vector<std::string> allowedmethods = _location.getAllowedMethods();
 		// redirectが存在したら
 		if (!(_location.getReturnRedirect().empty()))
 		{
