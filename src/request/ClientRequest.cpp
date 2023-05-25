@@ -106,6 +106,8 @@ void ClientRequest::setPath()
 		else
 		{
 			std::string sub_path = _path.substr(LongestMatchPath.length());
+			if (sub_path[0] == '/')
+				sub_path = sub_path.substr(1);
 			if (sub_path.find(".") != std::string::npos)
 			{
 				std::string after_dot = sub_path.substr(sub_path.find("."));

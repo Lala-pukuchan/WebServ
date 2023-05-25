@@ -235,7 +235,9 @@ void ServerResponse::getFile(){
 
 void ServerResponse::setFile(){
 	ifstream ifs(_file_true_path);
-	if (!ifs.is_open()){
+	DIR* dir;
+	dir = opendir(_file_true_path.c_str());
+	if (!dir){
 		setResponse("404", getErrorBody(404), "");
 	} else {
 		_file_true_path += UPLOAD_PAGE;
