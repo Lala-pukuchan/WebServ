@@ -18,7 +18,7 @@ CgiExe::CgiExe (ClientRequest &req) : _req(req), _result(""), _status(""){
 
 	// env
 	stringpair_t env[] = {
-		////stringpair_t("AUTH_TYPE", _req.getAuthorization()),
+		stringpair_t("AUTH_TYPE", _req.getAuthorization()),
         stringpair_t("CONTENT_LENGTH", _req.getContentLength()),
         stringpair_t("CONTENT_TYPE", _req.getContentType()),
         stringpair_t("GATEWAY_INTERFACE", "CGI/1.1"),
@@ -67,7 +67,12 @@ void CgiExe::exe (){
 	FILE *tmpFile = tmpfile();
 	int	inputFd = fileno(tmpFile);
 	if (_req.getMethod() == "POST"){
-		write(inputFd, _req.getRequestMessageBody().c_str(), _req.getRequestMessageBody().size());
+		int result = write(inputFd, _req.getRequestMessageBody().c_str(), _req.getRequestMessageBody().size());
+		if (result < 0){
+			cout << "Failed to write in cgi." << endl;
+			_status = "500";
+			return ;
+		}
 		lseek(inputFd, 0, SEEK_SET);
 	}
 
@@ -121,6 +126,11 @@ void CgiExe::exe (){
 		{
 			buf[size] = '\0';
 			_result += buf;
+		}
+		if (size < 0){
+			cout << "Failed to read in cgi." << endl;
+			_status = "500";
+			return ;
 		}
 
 		// should be checked
