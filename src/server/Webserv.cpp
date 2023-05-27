@@ -63,7 +63,7 @@ void Webserv::run(void)
 						ClientRequest request(strage[fd], findServerConfig(fd, strage[fd])); //TODO:findServerConfig() 作る
 						strage[fd].erase();
 						ServerResponse res = ServerResponse(request);
-						sendResponse(fd, &masterRecvFds, &masterSendFds, res.getResponse());  //sendする
+						sendResponse(fd, &masterSendFds, res.getResponse());  //sendする
 						// sendResponse(fd, &masterRecvFds, &masterSendFds, "HTTP/1.1 200 OK\r\n\r\n");
 					}
 				}
