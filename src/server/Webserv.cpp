@@ -97,11 +97,7 @@ void Webserv::makeAcceptedFd(int fd, fd_set *masterRecvFds)
 
 	acceptedFd = accept(fd, NULL, NULL);
 	if (acceptedFd == -1)
-	{
-	 	if (errno != EWOULDBLOCK) //ノンブロッキングでacceptedFdが-1になっているときは，エラーにならない
-			perror("accept");
 		return ;
-	}
 	_acceptedSockets[acceptedFd] = _sockets[fd];
 	fcntl(acceptedFd, F_SETFL, O_NONBLOCK);
 	FD_SET(acceptedFd, masterRecvFds);
