@@ -38,6 +38,8 @@ void ClientRequest::readClientRequest(std::string requestMessage)
 	iss_first_line >> _method;
 	// get path_info
 	iss_first_line >> _path;
+	_query_string = _path.substr(_path.find("?") + 1);
+	_path = _path.substr(0, _path.find("?"));
 	if (_path[_path.size() - 1] == '/' && _path.size() > 1)
 		_path = _path.substr(0, _path.size() - 1);
 	// get version
@@ -69,6 +71,8 @@ void ClientRequest::readClientRequest(std::string requestMessage)
 			_content_type = value;
 		if (key == "Transfer-Encoding:")
 			_transfer_encoding = value;
+		if (key == "Authorization:")
+			_authorization = value;
 	}
 	// get message body
 	for (std::string line; getline(iss, line);)
@@ -152,6 +156,7 @@ void ClientRequest::PrintRequest()
 	std::cout << "-------------------------------------" << std::endl;
 	std::cout << "method: " << _method << std::endl;
 	std::cout << "path: " << _path << std::endl;
+	std::cout << "query_string: " << _query_string << std::endl;
 	std::cout << "version: " << _version << std::endl;
 	std::cout << "server_name: " << _server_name << std::endl;
 	std::cout << "port: " << _port << std::endl;
@@ -195,3 +200,13 @@ bool ClientRequest::getIsCgi() const { return (_is_cgi); }
 ServerConfig ClientRequest::getServerConfig() const { return (_server); }
 
 LocationConfig ClientRequest::getLocationConfig() const { return (_location); }
+
+string ClientRequest::getHost() const { return (getLocationConfig().getServerName()); }
+
+string ClientRequest::getPort() const { return (getLocationConfig().getPortString()); }
+
+string ClientRequest::getContentType() const { return (_content_type); }
+
+string ClientRequest::getQueryString() const { return (_query_string); }
+
+string ClientRequest::getAuthorization() const { return (_authorization); }
