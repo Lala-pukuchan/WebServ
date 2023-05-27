@@ -311,7 +311,7 @@ void ServerResponse::Delete(){ deleteFile(); }
 ServerResponse::ServerResponse (ClientRequest &req) : 
 	_req(req), _conf(req.getLocationConfig()), _res(""), _method(req.getMethod()), _file_true_path(req.getFileAbsolutePath()), _file_ext(req.getFileExt()){
 
-	req.PrintRequest();
+	// req.PrintRequest();
 	if (checkClientRequest())
 		return ;
 
