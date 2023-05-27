@@ -91,7 +91,7 @@ void ClientRequest::setPath()
 		std::string location_path = it->first;
 		if (location_path[0] == '*')
 			continue ;
-		if (_path.find(location_path) == 0 && location_path.length() > LongestMatch)
+		if (_path.compare(0, location_path.length(), location_path) == 0 && location_path.length() > LongestMatch)
 		{
 			LongestMatch = location_path.length();
 			LongestMatchPath = location_path;
