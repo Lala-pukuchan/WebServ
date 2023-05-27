@@ -115,9 +115,11 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 	if (len == -1)
 	{
 		perror("recv");
+		FD_CLR(fd, masterRecvFds);
+		close(fd);
 		return ;
 	}
-	else if (len == 0) // connection closed
+	else if (len == 0)
 		return ;
 	buffer[len] = '\0';
 	strage[fd] += buffer;
