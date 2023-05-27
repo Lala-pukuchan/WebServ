@@ -20,10 +20,10 @@ CgiExe::CgiExe (ClientRequest &req) : _req(req), _result(""), _status(""){
 	stringpair_t env[] = {
 		////stringpair_t("AUTH_TYPE", _req.getAuthorization()),
         stringpair_t("CONTENT_LENGTH", _req.getContentLength()),
-        //stringpair_t("CONTENT_TYPE", _req.getContentType()),
+        stringpair_t("CONTENT_TYPE", _req.getContentType()),
         stringpair_t("GATEWAY_INTERFACE", "CGI/1.1"),
         stringpair_t("PATH_INFO", _req.getPathInfo()),
-        //stringpair_t("QUERY_STRING", _req.getQueryString()),
+        stringpair_t("QUERY_STRING", _req.getQueryString()),
         stringpair_t("PATH_TRANSLATED", cgi_path),
         stringpair_t("REMOTE_ADDR", ""),
         stringpair_t("REMOTE_HOST", ""),
@@ -31,8 +31,8 @@ CgiExe::CgiExe (ClientRequest &req) : _req(req), _result(""), _status(""){
         stringpair_t("REMOTE_USER", ""),
         stringpair_t("REQUEST_METHOD", _req.getMethod()),
         stringpair_t("SCRIPT_NAME", ""),
-        //stringpair_t("SERVER_NAME", _req.getHost()),
-        //stringpair_t("SERVER_PORT", _req.getPort()),
+        stringpair_t("SERVER_NAME", _req.getHost()),
+        stringpair_t("SERVER_PORT", _req.getPort()),
         stringpair_t("SERVER_PROTOCOL", "HTTP/1.1"),
         stringpair_t("SERVER_SOFTWARE", "werbserv/1.0")
 	};

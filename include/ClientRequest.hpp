@@ -30,6 +30,7 @@ class ClientRequest
 		string _cgi_path_info;
 		string _path;
 		string _version;
+		string _query_string;
 
 		// added by yuhmatsu
 		string _port;
@@ -37,6 +38,7 @@ class ClientRequest
 		string _content_type;
 		bool _is_cgi;
 		bool _is_redirect;
+		string _authorization;
 
 		vector<string> _allowedMethod;
 		int _maxBodySize;
@@ -68,6 +70,11 @@ class ClientRequest
 		bool getIsCgi() const;
 		ServerConfig getServerConfig() const;
 		LocationConfig getLocationConfig() const;
+		string getHost() const;
+		string getPort() const;
+		string getContentType() const;
+		string getQueryString() const;
+		string getAuthorization() const;
 
 		//for debug
 		void PrintRequest();
