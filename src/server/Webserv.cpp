@@ -40,8 +40,6 @@ void Webserv::run(void)
 
 	while(true)
 	{
-		FD_ZERO(&recvFds);
-		FD_ZERO(&sendFds);
 		memcpy(&recvFds, &masterRecvFds, sizeof(masterRecvFds));
 		memcpy(&sendFds, &masterSendFds, sizeof(masterSendFds));
 		
