@@ -79,6 +79,8 @@ void ClientRequest::readClientRequest(std::string requestMessage)
 		_request_message_body += line + "\n";
 
 	setPath();
+	if (_transfer_encoding == "chunked")
+		mergeChunkedBody();
 }
 
 void ClientRequest::setPath()
@@ -210,3 +212,47 @@ string ClientRequest::getContentType() const { return (_content_type); }
 string ClientRequest::getQueryString() const { return (_query_string); }
 
 string ClientRequest::getAuthorization() const { return (_authorization); }
+
+void ClientRequest::mergeChunkedBody() {
+    std::string line;
+    std::string result;
+
+	// Read the _request_message_body if chunked
+	std::istringstream iss(_request_message_body);
+
+    while (std::getline(iss, line)) {
+		try {
+			if (line == "\r")
+				continue; // Skip the CR character
+
+			// Get the size of the chunk
+			unsigned int size = std::strtoul(line.c_str(), NULL, 16);
+
+			// Break if we reached the last chunk
+			if (size == 0)
+				break;
+
+			char *buffer = new char[size+1];
+
+			// Read the chunk data
+			iss.read(buffer, size);
+
+			// Ensure the data is null terminated
+			buffer[size] = '\0';
+
+			// Append the chunk data to the result
+			result.append(buffer);
+
+			// Clean up
+			delete [] buffer;
+
+			// Read the trailing CR/LF
+			std::getline(iss, line);
+		} catch (std::exception &e) {
+			std::cout << "Error: " << e.what() << std::endl;
+			return ;
+		}
+    }
+
+    _request_message_body = result;
+}

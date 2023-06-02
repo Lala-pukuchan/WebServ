@@ -56,6 +56,8 @@ class ClientRequest
 		ClientRequest (string requestMessage);
 		~ClientRequest ();
 
+		void mergeChunkedBody();
+
 		// getter
 		string getMethod () const;
 		string getContentLength () const;
