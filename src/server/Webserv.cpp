@@ -162,7 +162,7 @@ void Webserv::sendResponse(int fd, fd_set *masterSendFds, string res)
 	int len;
 
 	len = send(fd, res.c_str(), res.size(), 0);
-	if (len == -1)
+	if (len == -1 || len == 0)
 		perror("send");
 	FD_CLR(fd, masterSendFds);
 	close(fd);
