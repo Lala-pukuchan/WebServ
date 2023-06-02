@@ -5,11 +5,6 @@
 # include <iostream>
 # include <string>
 # include <unistd.h>
-// # include <ctype.h>
-// # include <errno.h>
-// # include <signal.h>
-// # include <stdlib.h>
-// # include <sysexits.h>
 
 # include <sys/param.h>
 # include <sys/socket.h>

@@ -40,8 +40,6 @@ void Webserv::run(void)
 
 	while(true)
 	{
-		FD_ZERO(&recvFds);
-		FD_ZERO(&sendFds);
 		memcpy(&recvFds, &masterRecvFds, sizeof(masterRecvFds));
 		memcpy(&sendFds, &masterSendFds, sizeof(masterSendFds));
 		
@@ -65,7 +63,7 @@ void Webserv::run(void)
 						ClientRequest request(strage[fd], findServerConfig(fd, strage[fd])); //TODO:findServerConfig() 作る
 						strage[fd].erase();
 						ServerResponse res = ServerResponse(request);
-						sendResponse(fd, &masterRecvFds, &masterSendFds, res.getResponse());  //sendする
+						sendResponse(fd, &masterSendFds, res.getResponse());  //sendする
 						// sendResponse(fd, &masterRecvFds, &masterSendFds, "HTTP/1.1 200 OK\r\n\r\n");
 					}
 				}
@@ -97,11 +95,7 @@ void Webserv::makeAcceptedFd(int fd, fd_set *masterRecvFds)
 
 	acceptedFd = accept(fd, NULL, NULL);
 	if (acceptedFd == -1)
-	{
-	 	if (errno != EWOULDBLOCK) //ノンブロッキングでacceptedFdが-1になっているときは，エラーにならない
-			perror("accept");
 		return ;
-	}
 	_acceptedSockets[acceptedFd] = _sockets[fd];
 	fcntl(acceptedFd, F_SETFL, O_NONBLOCK);
 	FD_SET(acceptedFd, masterRecvFds);
@@ -119,9 +113,11 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 	if (len == -1)
 	{
 		perror("recv");
+		FD_CLR(fd, masterRecvFds);
+		close(fd);
 		return ;
 	}
-	else if (len == 0) // connection closed
+	else if (len == 0)
 		return ;
 	buffer[len] = '\0';
 	strage[fd] += buffer;
@@ -129,10 +125,6 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 	const unsigned long pos = strage[fd].find("\r\n\r\n");
 	if (pos == string::npos)
 		return ;
-	// cout << "=================strage====================" << endl;
-	// cout << "pos is" << pos << endl;
-	// cout << strage[fd] << endl;
-	// cout << "===========================================" << endl;
 	ClientRequest req(strage[fd]);
 	if (!req.getIsContent() && req.getTransferEncoding() != "chunked")
 	{
@@ -146,31 +138,13 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 		{
 			FD_CLR(fd, masterRecvFds);
 			FD_SET(fd, masterSendFds);
-			// cout << strage[fd].size() - (pos + 4) << endl;
-			// cout << req.getContentLength() << endl;
 			return ;
 		}
-		// cout << "pos is " << pos << endl;
-		// cout << 
-		// cout << "size is " << strage[fd].size() - (pos + 4) << endl;
-		// cout << "acctually size is " << req.getContentLength() << endl;
 	}
 	if (req.getTransferEncoding() == "chunked") //TODO:まだ
 	{
-		// if (strage[fd].find("\r\n\r\n\0") != string::npos)
-		// {
-		// 	cout << "nothing" << endl;
-		// 	FD_CLR(fd, masterRecvFds);
-		// 	FD_SET(fd, masterSendFds);
-		// 	return ;
-		// }
 		string temp;
-		// cout << "checked size is " << checkedSize[fd] << endl;
 		temp.assign(strage[fd].substr(max(checkedSize[fd], 0)));
-		// cout << "temp size is" << temp.size() << endl;
-		// cout << "*******************temp*********************" << endl;
-		// cout << "temp is " << temp << endl;
-		// cout << "****************************************" << endl;
 		if (temp.find("\r\n0\r\n") != string::npos)
 		{
 			FD_CLR(fd, masterRecvFds);
@@ -178,22 +152,20 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 			checkedSize[fd] = 0;
 			return ;
 		}
-		// cout << "done" << endl;
 		int size = temp.size();
 		checkedSize[fd] += max(size - 10, 0);
 	}
 }
 
-void Webserv::sendResponse(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, string res)
+void Webserv::sendResponse(int fd, fd_set *masterSendFds, string res)
 {
 	int len;
 
 	len = send(fd, res.c_str(), res.size(), 0);
-	if (len == -1)
+	if (len == -1 || len == 0)
 		perror("send");
 	FD_CLR(fd, masterSendFds);
 	close(fd);
-	(void) masterRecvFds;
 }
 
 string Webserv::getServerName(string& request)
@@ -244,10 +216,3 @@ void Webserv::printdebug()
 #else
 void Webserv::printdebug() {}
 #endif
-
-// bool Webserv::matchListenFd(int fd)
-// {
-// 	if (_sockets.find(fd) == _sockets.end())
-// 		return false;
-// 	return true;
-// }

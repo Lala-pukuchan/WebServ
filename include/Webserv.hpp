@@ -20,7 +20,7 @@ class Webserv
 		void setFds(fd_set *masterRecvFds);
 		void makeAcceptedFd(int fd, fd_set *masterRecvFds);
 		void recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, map<int ,string> &strage);
-		void sendResponse(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, string res);
+		void sendResponse(int fd, fd_set *masterSendFds, string res);
 		ServerConfig findServerConfig(int fd, string& request);
 		string getServerName(string& request);
 
