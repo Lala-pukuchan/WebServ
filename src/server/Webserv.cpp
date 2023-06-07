@@ -134,8 +134,9 @@ void Webserv::recvRequest(int fd, fd_set *masterRecvFds, fd_set *masterSendFds, 
 	}
 	if (req.getIsContent())
 	{
-		if (strage[fd].size() == stoul(req.getContentLength()) + pos + 4)
+		if (strage[fd].size() >= stoul(req.getContentLength()) + pos + 4)
 		{
+			strage[fd][stoul(req.getContentLength()) + pos + 4] = '\0';
 			FD_CLR(fd, masterRecvFds);
 			FD_SET(fd, masterSendFds);
 			return ;
