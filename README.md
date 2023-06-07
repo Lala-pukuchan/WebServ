@@ -52,3 +52,13 @@
 |  結果  | メソッド |  パス  |
 | ---- | ---- | ---- |
 |  13  | GET |  `curl -v --resolve webserv1:4242:127.0.0.1 http://webserv1:4242/redirect/`  | ○
+
+## telnet
+telnet localhost 4242
+
+POST /upload/ HTTP/1.1
+Host: webserv1:4242
+User-Agent: curl/7.54.0
+Accept: */*
+Content-Length: 10
+Content-Type: application/x-www-form-urlencoded

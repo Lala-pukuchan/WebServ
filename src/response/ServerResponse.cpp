@@ -164,9 +164,7 @@ bool ServerResponse::getDir(){
 
 		if (!existFile()){
 			isDir = true;
-			// cout << "non" << _conf.getAutoindex() << endl;
 			if (_conf.getAutoindex()){
-				// cout << "auto" << endl;
 				DIR* dir;
 				struct dirent* entry;
 				char* dirPath = new char[bkDir.length() + 1];
@@ -311,7 +309,7 @@ void ServerResponse::Delete(){ deleteFile(); }
 ServerResponse::ServerResponse (ClientRequest &req) : 
 	_req(req), _conf(req.getLocationConfig()), _res(""), _method(req.getMethod()), _file_true_path(req.getFileAbsolutePath()), _file_ext(req.getFileExt()){
 
-	// req.PrintRequest();
+	req.PrintRequest();
 	if (checkClientRequest())
 		return ;
 
