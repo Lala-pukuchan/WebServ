@@ -56,15 +56,9 @@
 ## telnet
 telnet localhost 4242
 
-POST /upload HTTP/1.1
-Host: localhost:4242
-User-Agent: curl/7.54.0
-Accept: */*
-Content-Length: 10
-
 POST /upload/ HTTP/1.1
 Host: webserv1:4242
 User-Agent: curl/7.54.0
 Accept: */*
-Content-Length: 0
+Content-Length: 10
 Content-Type: application/x-www-form-urlencoded
