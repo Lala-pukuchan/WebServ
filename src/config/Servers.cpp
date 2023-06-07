@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 16:02:19 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/10 21:41:53 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/06/07 18:40:04 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,8 @@ void Servers::setServersConfig(void)
 		else
 			throw ConfigContentError(pos, _configStrings[pos]);
 	}
+	if (_servers.size() == 0)
+		throw EmptyServerError();
 }
 
 // for debug
