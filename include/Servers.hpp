@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:51:31 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/05/10 21:41:33 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/06/07 18:53:45 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ class Servers
 
 		map<string, vector<ServerConfig> >& getServers();
 		ServerConfig getDefaultServer();
+		bool checkPortServer();
 
 		//for debug
 		void PrintConfigFile();
@@ -60,6 +61,24 @@ class FileEmptyError : public exception
 		virtual const char* what() const throw()
 		{
 			return ("config file is empty");
+		}
+};
+
+class EmptyServerError : public exception
+{
+	public:
+		virtual const char* what() const throw()
+		{
+			return ("Server is not defined");
+		}
+};
+
+class SameServerError : public exception
+{
+	public:
+		virtual const char* what() const throw()
+		{
+			return ("The same server exists.");
 		}
 };
 
