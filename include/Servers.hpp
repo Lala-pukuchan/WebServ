@@ -6,7 +6,7 @@
 /*   By: yuhmatsu <yuhmatsu@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/01 10:51:31 by yuhmatsu          #+#    #+#             */
-/*   Updated: 2023/06/07 18:53:45 by yuhmatsu         ###   ########.fr       */
+/*   Updated: 2023/06/07 19:44:36 by yuhmatsu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,108 @@ class ConfigContentError : public exception
 			return (_message.c_str());
 		}
 		~ConfigContentError() throw() {}
+};
+
+class SemicolonError : public std::exception
+{
+	private:
+		std::string _message;
+
+	public:
+		SemicolonError(size_t pos, const std::string &line)
+		{
+			std::stringstream ss;
+			ss << "line " << pos << ": error with ';' :" << line << std::endl;
+			_message = ss.str();
+		}
+		virtual const char* what() const throw()
+		{
+			return (_message.c_str());
+		}
+		~SemicolonError() throw() {}
+};
+
+class EmptyValueError : public std::exception
+{
+	private:
+		std::string _message;
+
+	public:
+		EmptyValueError(size_t pos, const std::string &line)
+		{
+			std::stringstream ss;
+			ss << "line " << pos << ": value is empty :" << line << std::endl;
+			_message = ss.str();
+		}
+		virtual const char* what() const throw()
+		{
+			return (_message.c_str());
+		}
+		~EmptyValueError() throw() {}
+};
+
+class EmptyPortError : public std::exception
+{
+	private:
+		std::string _message;
+
+	public:
+		virtual const char* what() const throw()
+		{
+			return ("port is empty");
+		}
+		~EmptyPortError() throw() {}
+};
+
+class InvalidKeyError : public std::exception
+{
+	private:
+		std::string _message;
+
+	public:
+		InvalidKeyError(size_t pos, const std::string &line)
+		{
+			std::stringstream ss;
+			ss << "line " << pos << ": invalid key :" << line << std::endl;
+			_message = ss.str();
+		}
+		virtual const char* what() const throw()
+		{
+			return (_message.c_str());
+		}
+		~InvalidKeyError() throw() {}
+};
+
+class InvalidMethodError : public std::exception
+{
+	private:
+		std::string _message;
+
+	public:
+		InvalidMethodError(size_t pos, const std::string &line)
+		{
+			std::stringstream ss;
+			ss << "line " << pos << ": invalid method :" << line << std::endl;
+			_message = ss.str();
+		}
+		virtual const char* what() const throw()
+		{
+			return (_message.c_str());
+		}
+		~InvalidMethodError() throw() {}
+};
+
+class EmptyAliasError : public std::exception
+{
+	private:
+		std::string _message;
+
+	public:
+		virtual const char* what() const throw()
+		{
+			return ("alias is empty");
+		}
+		~EmptyAliasError() throw() {}
 };
 
 #endif
