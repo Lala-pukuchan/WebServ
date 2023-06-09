@@ -1,0 +1,17 @@
+HTTP/1.1 404 Not Found
+Server: Webserv/1.0
+Date: Fri, 19 May 2023 09:40:38 GMT
+Content-Type: text/html
+Content-Length: 165
+Connection: close
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Default Error Page</title>
+</head>
+<body>
+    <h1>ERROR!</h1>
+    <p>This is a default error HTML file.</p>
+</body>
+</html>
