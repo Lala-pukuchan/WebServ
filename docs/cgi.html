@@ -1,0 +1,23 @@
+<html>
+<head><title>CGI Test</title></head>
+<body>
+
+<h1>CGI Test</h1>
+<h2><a id="cgi-example-get">CGI の GET メソッドを使う例</a></h2>
+
+	<form action="http://localhost:4242/test.cgi" method="get">
+		<input type="submit" value="send">
+	</form>
+
+<h2><a id="cgi-example-post">CGI の POST メソッドを使う例</a></h2>
+
+	<form action="http://localhost:4242/test.cgi" method="post">
+		<p>
+			名前: 
+			<input type="text" name="name">
+			<input type="submit" value="send">
+		</p>
+	</form>
+</body>
+
+</html>
