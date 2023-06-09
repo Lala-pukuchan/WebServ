@@ -63,7 +63,24 @@ Accept: */*
 Content-Length: 10
 Content-Type: application/x-www-form-urlencoded
 
+
 GET / HTTP/1.1
 Host: localhost:4242
 User-Agent: curl/7.54.0
 Accept: */*
+
+
+POST /upload/ HTTP/1.1
+Host: webserv1:4242
+User-Agent: curl/7.54.0
+Accept: */*
+Content-Type: application/x-www-form-urlencoded
+Transfer-Encoding: chunked
+
+3
+123
+2
+12
+1
+1
+0
