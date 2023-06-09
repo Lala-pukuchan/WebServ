@@ -3,7 +3,7 @@
 
 #include "ClientRequest.hpp"
 #include <unistd.h>
-
+#include <signal.h>
 #define BUFFER_SIZE 42
 
 class CgiExe
