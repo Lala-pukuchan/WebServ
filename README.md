@@ -62,3 +62,8 @@ User-Agent: curl/7.54.0
 Accept: */*
 Content-Length: 10
 Content-Type: application/x-www-form-urlencoded
+
+GET / HTTP/1.1
+Host: localhost:4242
+User-Agent: curl/7.54.0
+Accept: */*
