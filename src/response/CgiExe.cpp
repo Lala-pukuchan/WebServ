@@ -1,6 +1,12 @@
 #include "CgiExe.hpp"
 #include "ServerResponse.hpp"
 
+volatile sig_atomic_t p_id = 0;
+void signal_handler(int signum) {
+	(void)signum;
+    kill(p_id, SIGKILL);
+}
+
 CgiExe::CgiExe (ClientRequest &req) : _req(req), _result(""), _status(""){
 
 	// arg
@@ -115,9 +121,20 @@ void CgiExe::exe (){
 
 	} else {
 
+		// alarm
+		p_id = pid;
+		signal(SIGALRM, signal_handler);
+		alarm(3);
+
 		// wait
 		close(fd[1]);
-		waitpid(pid, NULL, 0);
+		int status = 0;
+		waitpid(pid, &status, 0);
+		if (WIFSIGNALED(status)) {
+            cout << "Cgi result is not returned in 3 seconds." << endl;
+			_status = "500";
+			return ;
+        }
 
 		// result
 		int size = 0;
